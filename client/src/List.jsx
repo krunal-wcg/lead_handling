@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { FcCompactCamera, FcEditImage, FcRemoveImage } from "react-icons/fc";
+import {
+  FcCompactCamera,
+  FcEditImage,
+  FcExternal,
+  FcRemoveImage,
+} from "react-icons/fc";
 import { io } from "socket.io-client";
 import { data } from "./data";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "./common/Tooltip";
 import Swal from "sweetalert2";
-import 'sweetalert2/src/sweetalert2.scss'
-const socket = io("http://192.168.1.76:3001");
+import "sweetalert2/src/sweetalert2.scss";
+import EditForm from "./EditForm";
+const socket = io("http://192.168.1.76:9000");
 
 const List = () => {
-  console.log(data);
   const navigate = useNavigate();
   const [userId, setUserId] = useState("111");
   const [leads, setLeads] = useState({});
@@ -29,8 +34,8 @@ const List = () => {
   }, [data]);
 
   const openLead = (leadId) => {
-    navigate(`/list/${leadId}`);
-
+    // navigate(`/list/${leadId}`);
+    setOpen(true);
     socket.emit("openLead", leadId, userId);
   };
 
@@ -76,14 +81,27 @@ const List = () => {
 
     ////////////
 
-    socket.on("receiveAlert", ({userId:id, title, text, icon, confirmButtonText }) => {
-      id===userId && Swal.fire({
-        title,
-        text,
-        icon,
-        confirmButtonText,
+    socket.on("sendAlert", () => {
+      // Show SweetAlert when receiving the alert event
+      Swal.fire({
+        title: "SweetAlert Example",
+        text: "This is a SweetAlert sent from the server!",
+        icon: "success",
+        confirmButtonText: "OK",
       });
     });
+    socket.on(
+      "receiveAlert",
+      ({ userId: id, title, text, icon, confirmButtonText }) => {
+        id === userId &&
+          Swal.fire({
+            title,
+            text,
+            icon,
+            confirmButtonText,
+          });
+      }
+    );
     return () => {
       socket.off("initialData");
       socket.off("leadOpened");
@@ -97,10 +115,35 @@ const List = () => {
     };
   }, [userId]);
 
+  const [open, setOpen] = useState(false);
+
+  const [editedPerson, setEditedPerson] = useState({
+    name: "",
+    email: "",
+    role: "",
+    city: "",
+    country: "",
+    phone: "",
+    score: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedPerson((prevPerson) => ({
+      ...prevPerson,
+      [name]: value,
+    }));
+  };
+
+  const handleSave = () => {
+    console.log("submit===>",editedPerson);
+    setOpen(false)
+  };
+
   return (
     <>
       <section className="text-gray-600 body-font">
-        <div className="container px-5 py-24 mx-auto">
+        <div className=" px-2 py-24 mx-auto">
           <div className="flex flex-col text-center w-full mb-20">
             <h1 className="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">
               Lead List
@@ -113,20 +156,29 @@ const List = () => {
           <div className="lg:w-2/3 w-full mx-auto overflow-auto">
             <table className="table-auto w-full text-left whitespace-no-wrap">
               <thead>
-                <tr>
+                <tr className="border-b-4 border-stone-700">
                   <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">
                     name
                   </th>
                   <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                    age
+                    email
                   </th>
                   <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                    gender
+                    role
                   </th>
                   <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                    occupation
+                    city
                   </th>
                   {/* <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"> city</th> */}
+                  <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br">
+                    country
+                  </th>
+                  <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br">
+                    phone no
+                  </th>
+                  <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br">
+                    score
+                  </th>
                   <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br">
                     action
                   </th>
@@ -142,15 +194,16 @@ const List = () => {
                         : leads[el.id]?.user
                         ? "bg-yellow-100"
                         : ""
-                    }`}
+                    } border-b-2 border-cyan-500 `}
                   >
                     <td className="px-4 py-3">{el.name}</td>
-                    <td className="px-4 py-3">{el.age}</td>
-                    <td className="px-4 py-3 text-lg text-gray-900">
-                      {el.gender}
-                    </td>
-                    <td className="px-4 py-3">{el.occupation}</td>
-                    {/* <td className="px-4 py-3">{el.city}</td> */}
+                    <td className="px-4 py-3">{el.email}</td>
+                    <td className="px-4 py-3">{el.role}</td>
+                    <td className="px-4 py-3">{el.city}</td>
+                    <td className="px-4 py-3">{el.country}</td>
+                    <td className="px-4 py-3">{el.phone}</td>
+                    <td className="px-4 py-3">{el.score}</td>
+
                     <td>
                       {leads[el.id]?.user === userId && (
                         <button onClick={() => closeLead(el.id)}>
@@ -159,19 +212,22 @@ const List = () => {
                       )}
                       {leads[el.id]?.user
                         ? leads[el.id]?.user != userId && (
-                            <Tooltip message={` ${leads[el.id].user}`}>
-                              <button
-                                data-tooltip-target="tooltip-default"
-                                type="button"
-                              >
-                                <FcCompactCamera />
+                            <div className="flex">
+                              {" "}
+                              <Tooltip message={` ${leads[el.id].user}`}>
                                 <button
-                                  onClick={() => sendAlert(leads[el.id]?.user)}
+                                  data-tooltip-target="tooltip-default"
+                                  type="button"
                                 >
-                                  Send Alert
+                                  <FcCompactCamera />
                                 </button>
+                              </Tooltip>
+                              <button
+                                onClick={() => sendAlert(leads[el.id]?.user)}
+                              >
+                                <FcExternal />
                               </button>
-                            </Tooltip>
+                            </div>
                           )
                         : !Object.keys(leads).find(
                             (key) => leads[key].user === userId
@@ -180,14 +236,6 @@ const List = () => {
                               <FcEditImage />{" "}
                             </button>
                           )}
-                      {/* {userId && (
-                        <button
-                          onClick={() => sendAlert("krunal")}
-                          className="bg-green-500 text-white py-1 px-2 rounded ml-2"
-                        >
-                          Send Alert
-                        </button>
-                      )} */}
                     </td>
                   </tr>
                 ))}
@@ -196,6 +244,10 @@ const List = () => {
           </div>
         </div>
       </section>
+
+   
+      {/* <!-- drawer component --> */}
+      <EditForm open={open} setOpen={setOpen}/>
     </>
   );
 };

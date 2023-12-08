@@ -3,7 +3,9 @@ const http = require("http");
 const connectDb = require("./config/dbConnection");
 const allowCrossDomain = require("./middleware/nocorsHandler");
 const errorHandler = require("./middleware/errorHandler");
+const dotenv = require("dotenv");
 
+dotenv.config();
 const app = express();
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
@@ -31,9 +33,8 @@ const leads = {
   "dd98f95b-7ad4-4e16-8b25-28cdeca0db9f": {user: null},
 };
 
-
 const userLeads = {}; // Keep track of leads opened by each user
-let userId = {};
+
 
 io.on("connection", (socket) => {
   console.log(`A user connected ${socket.id}`);
