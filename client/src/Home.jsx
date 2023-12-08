@@ -3,9 +3,7 @@ import { Link } from 'react-router-dom'
 
 const Home = () => {
   return (
-    <Link 
-    to="/list"
-    >Show list</Link>
+    <Link to="/list">Show list</Link>
   )
 }
 

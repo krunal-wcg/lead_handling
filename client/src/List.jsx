@@ -76,15 +76,6 @@ const List = () => {
 
     ////////////
 
-    socket.on("sendAlert", () => {
-      // Show SweetAlert when receiving the alert event
-      Swal.fire({
-        title: "SweetAlert Example",
-        text: "This is a SweetAlert sent from the server!",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-    });
     socket.on("receiveAlert", ({userId:id, title, text, icon, confirmButtonText }) => {
       id===userId && Swal.fire({
         title,
