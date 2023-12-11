@@ -15,6 +15,15 @@ const io = require("socket.io")(server, {
   },
 });
 
+const asyncFN = async () => {
+  await connectDb();
+  await io.on("connection", async (socket) => {
+    await socketConnect(io, socket);
+  });
+};
+
+asyncFN();
+
 app.use(express.json());
 app.use(allowCrossDomain);
 app.get("/", function (req, res) {
@@ -22,12 +31,6 @@ app.get("/", function (req, res) {
 });
 app.use("/api/leads", require("./routes/leadsRoutes"));
 app.use("/api/users", require("./routes/usersRoutes"));
-
-connectDb().then(() => {
-  io.on("connection", async (socket) => {
-    await socketConnect(io, socket);
-  });
-});
 
 const PORT = process.env.PORT || 3001;
 

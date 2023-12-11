@@ -1,11 +1,11 @@
 const Leads = require("../models/leadsModel");
 
-const socketConnect = async (io, socket) => {
-  const userLeads = {}; // Keep track of leads opened by each user
-  var leads = {};
+const userLeads = {}; // Keep track of leads opened by each user
+const leads = {};
 
+const socketConnect = async (io, socket) => {
   // Group orders by status within the last week
-  const leadsResult = await Leads.aggregate([
+  const leadsResult = await Leads?.aggregate([
     {
       $group: {
         _id: "$_id",
@@ -14,17 +14,18 @@ const socketConnect = async (io, socket) => {
   ]);
 
   // Iterate through the array and create an object with the desired format
-  leadsResult
-    ?.map((e) => e?._id?.toString())
-    ?.forEach((item) => {
-      leads[item] = { user: null };
-    });
+  !Object.keys(leads)?.length &&
+    leadsResult
+      ?.map((e) => e?._id?.toString())
+      ?.forEach((item) => {
+        leads[item] = { user: null };
+      });
 
-  console.log(`A user connected ${socket.id}`);
+  console.log(`A user connected ${socket?.id}`);
 
-  socket.on("requestInitialData", () => {
+  socket.on("requestInitialData", async () => {
     // Respond with the current leads data when requested
-    socket.emit("initialData", leads);
+    await socket.emit("initialData", leads);
   });
 
   socket.on("openLead", (leadId, userId) => {
@@ -90,11 +91,10 @@ const socketConnect = async (io, socket) => {
     });
   });
   socket.on("disconnect", () => {
-    console.log(`A user disconnected ${socket.id}`);
+    console.log(`A user disconnected ${socket?.id}`);
     const userId = Object.keys(userLeads).find(
-      (key) => userLeads[key] === socket.id
+      (key) => userLeads[key] === socket?.id
     );
-    console.log(userId);
     if (userId) {
       const leadId = userLeads[userId];
       leads[leadId].user = null;
