@@ -5,7 +5,6 @@ const allowCrossDomain = require("./middleware/nocorsHandler");
 const errorHandler = require("./middleware/errorHandler");
 const dotenv = require("dotenv");
 const socketConnect = require("./socketIO/socketConnection");
-const router = express.Router();
 
 dotenv.config();
 const app = express();
