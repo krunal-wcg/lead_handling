@@ -15,17 +15,18 @@ const io = require("socket.io")(server, {
   },
 });
 
-connectDb();
 app.use(express.json());
 app.use(allowCrossDomain);
 app.get("/", function (req, res) {
-  res.status(200).json({ message: "WCG Lead Handling!" }); // Sending the access token as a JSON response
+  res.status(200).json({ title: "WCG Lead Handling!" }); // Sending the access token as a JSON response
 });
 app.use("/api/leads", require("./routes/leadsRoutes"));
 app.use("/api/users", require("./routes/usersRoutes"));
 
-io.on("connection", async (socket) => {
-  await socketConnect(io, socket);
+connectDb().then(() => {
+  io.on("connection", async (socket) => {
+    await socketConnect(io, socket);
+  });
 });
 
 const PORT = process.env.PORT || 3001;
