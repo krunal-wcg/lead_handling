@@ -12,7 +12,7 @@ import Tooltip from "./common/Tooltip";
 import Swal from "sweetalert2";
 import "sweetalert2/src/sweetalert2.scss";
 import EditForm from "./EditForm";
-const socket = io("http://192.168.1.76:9000");
+const socket = io(process.env.PORT_URL);
 
 const List = () => {
   const navigate = useNavigate();
