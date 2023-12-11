@@ -13,7 +13,7 @@ const leads = {
 
 const userLeads = {}; // Keep track of leads opened by each user
 
-const socketConnect = async (io,socket) => {
+const socketConnect = async (io, socket) => {
   console.log(`A user connected ${socket.id}`);
 
   socket.on("requestInitialData", () => {

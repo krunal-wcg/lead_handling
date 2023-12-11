@@ -4,12 +4,16 @@ import Home from './Home'
 import Login from './Login'
 import List from './List'
 import Detail from './Detail'
+import SignIn from './pages/SignIn'
+import SignUp from './pages/SignUp'
 
 const Router = () => {
     return (
         <div>
             <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/signup" element={<SignUp />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/list"  >
                     <Route index element={<List />} />
