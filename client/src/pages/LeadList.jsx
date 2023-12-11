@@ -14,7 +14,7 @@ import axios from 'axios';
 import { decodedToken } from "../healpers/getDecodedToken";
 
 
-const socket = io("http://192.168.1.76:9000");
+const socket = io("http://192.168.1.107:9000");
 
 const LeadList = () => {
   const [userId, setUserId] = useState("111");
@@ -27,13 +27,6 @@ const LeadList = () => {
     var token = decodedToken();
     setUserId(token?.user?.username);
     setRole(token?.user?.role);
-  }, []);
-
-
-  // for set decoded token 
-  useEffect(() => {
-    var token = decodedToken()
-    setUserId(token?.user?.username);
   }, []);
 
   useEffect(() => {
@@ -60,12 +53,7 @@ const LeadList = () => {
   };
 
   useEffect(() => {
-    // Request initial leads data when component mounts
-    socket.emit("requestInitialData");
 
-    socket.on("initialData",  (initialLeads) => {
-      setLeads(initialLeads);
-    });
     socket.on("leadOpened", ({ leadId, userId }) => {
       setLeads((prevLeads) => ({
         ...prevLeads,
@@ -154,7 +142,6 @@ const LeadList = () => {
             cancelButtonAriaLabel: "Thumbs down",
           }).then((res) => {
             if (res.isConfirmed) {
-                console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
               openLead(leadId, alertId);
             } else {
             }
@@ -163,7 +150,6 @@ const LeadList = () => {
     );
 
     return () => {
-      socket.off("initialData");
       socket.off("leadOpened");
       socket.off("leadClosed");
       socket.off("invalidLead");
@@ -176,6 +162,17 @@ const LeadList = () => {
     };
   }, [userId]);
 
+  useEffect(() => {
+    // Request initial leads data when component mounts
+    socket.emit("requestInitialData");
+
+    socket.on("initialData", (initialLeads) => {
+      setLeads(initialLeads);
+    });
+    return () => {
+      socket.off("initialData");
+    };
+  }, [leads]);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -191,7 +188,7 @@ const LeadList = () => {
     leads && fetchData();
   }, []);
 
-  return leads && data && !loading && (
+  return data && !loading && (
     <>
       <section className="text-gray-600 body-font">
         <div className=" px-2 py-24 mx-auto">
