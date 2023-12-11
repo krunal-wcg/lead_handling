@@ -12,7 +12,6 @@ import Tooltip from "./common/Tooltip";
 import Swal from "sweetalert2";
 import "sweetalert2/src/sweetalert2.scss";
 import EditForm from "./EditForm";
-import { FaRegThumbsUp } from "react-icons/fa";
 const socket = io("http://192.168.1.76:9000");
 
 const List = () => {

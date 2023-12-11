@@ -5,6 +5,7 @@ const allowCrossDomain = require("./middleware/nocorsHandler");
 const errorHandler = require("./middleware/errorHandler");
 const dotenv = require("dotenv");
 const socketConnect = require("./socketIO/socketConnection");
+const router = express.Router();
 
 dotenv.config();
 const app = express();
@@ -18,13 +19,14 @@ const io = require("socket.io")(server, {
 connectDb();
 app.use(express.json());
 app.use(allowCrossDomain);
+app.get("/", function (req, res) {
+  res.status(200).json({ message: "WCG Lead Handling!" }); // Sending the access token as a JSON response
+});
 app.use("/api/leads", require("./routes/leadsRoutes"));
 app.use("/api/users", require("./routes/usersRoutes"));
 
-
-
 io.on("connection", async (socket) => {
-  await socketConnect(io,socket);
+  await socketConnect(io, socket);
 });
 
 const PORT = process.env.PORT || 3001;
