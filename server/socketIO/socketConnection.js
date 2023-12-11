@@ -13,7 +13,7 @@ const leads = {
 
 const userLeads = {}; // Keep track of leads opened by each user
 
-const socketConnect = async (socket) => {
+const socketConnect = async (io,socket) => {
   console.log(`A user connected ${socket.id}`);
 
   socket.on("requestInitialData", () => {
@@ -52,17 +52,30 @@ const socketConnect = async (socket) => {
     }
   });
 
-  socket.on("sendAlertToUser", (userId) => {
-    // Send an alert to the specified user
-    console.log("send ", userId, userLeads);
+  socket.on("sendAlertToUser", (  targetUserId ,leadId ,senderId  ) => { //  targetUserId  AA ,leadId ,senderId BB  AA snend the alrer 
+    console.log("send ",targetUserId ,leadId ,senderId );
     io.emit("receiveAlert", {
-      userId: userId,
+      targetUserId:targetUserId   ,leadId:leadId ,senderId:senderId ,
       title: "Lead Update",
       text: "A new update for the lead you have open!",
       icon: "info",
       confirmButtonText: "OK",
     });
   });
+  socket.on("alertConfirmed", (  targetUserId ,leadId ,senderId) => { //  targetUserId  AA ,leadId ,senderId BB  BB confirm alert and send response 
+    console.log("yes send it =============================", targetUserId ,leadId ,senderId);
+    // console.log( targetUserId ,leadId ,senderId);
+    io.emit("confirmAlert", {
+      confirmId :targetUserId  ,
+      leadId:leadId ,
+      alertId:senderId ,
+      title: "Lead Update",
+      text: "user close the lead want to open it ",
+      icon: "info",
+      confirmButtonText: "OK",
+
+    });
+  })
   socket.on("disconnect", () => {
     console.log(`A user disconnected ${socket.id}`);
     const userId = Object.keys(userLeads).find(

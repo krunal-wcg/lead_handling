@@ -24,7 +24,7 @@ app.use("/api/users", require("./routes/usersRoutes"));
 
 
 io.on("connection", async (socket) => {
-  await socketConnect(socket);
+  await socketConnect(io,socket);
 });
 
 const PORT = process.env.PORT || 3001;

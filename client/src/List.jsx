@@ -12,13 +12,15 @@ import Tooltip from "./common/Tooltip";
 import Swal from "sweetalert2";
 import "sweetalert2/src/sweetalert2.scss";
 import EditForm from "./EditForm";
-const socket = io(process.env.PORT_URL);
+import { FaRegThumbsUp } from "react-icons/fa";
+const socket = io("http://192.168.1.76:9000");
 
 const List = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState("111");
   const [leads, setLeads] = useState({});
 
+  console.log("leads",leads);
   useEffect(() => {
     setUserId(localStorage.getItem("loggedUser"));
   }, []);
@@ -33,17 +35,19 @@ const List = () => {
     setLeads(updatedLeads);
   }, [data]);
 
-  const openLead = (leadId) => {
+  const openLead = (leadId , senderID) => {
     // navigate(`/list/${leadId}`);
     setOpen(true);
-    socket.emit("openLead", leadId, userId);
+    socket.emit("openLead", leadId, senderID);
   };
 
-  const closeLead = (leadId) => {
-    socket.emit("closeLead", leadId, userId);
+  const closeLead = (leadId ,closerID) => {
+    setOpen(false);
+    socket.emit("closeLead", leadId, closerID);
   };
-  const sendAlert = (targetUserId) => {
-    socket.emit("sendAlertToUser", targetUserId);
+  const sendAlert = (targetUserId ,sendleadId ,senderId) => {
+    socket.emit("sendAlertToUser", targetUserId ,sendleadId ,senderId );
+    console.log(targetUserId ,sendleadId ,senderId);
   };
 
   useEffect(() => {
@@ -81,27 +85,60 @@ const List = () => {
 
     ////////////
 
-    socket.on("sendAlert", () => {
-      // Show SweetAlert when receiving the alert event
-      Swal.fire({
-        title: "SweetAlert Example",
-        text: "This is a SweetAlert sent from the server!",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-    });
+  
     socket.on(
       "receiveAlert",
-      ({ userId: id, title, text, icon, confirmButtonText }) => {
-        id === userId &&
+      ({    targetUserId ,leadId ,senderId , title, text, icon, confirmButtonText }) => {
+        console.log("receiveAlert",  targetUserId ,leadId ,senderId );
+        targetUserId === userId &&
           Swal.fire({
-            title,
-            text,
-            icon,
-            confirmButtonText,
-          });
+            title, text, icon, confirmButtonText,
+            showCloseButton: true,
+            showCancelButton: true,
+            focusConfirm: false,
+           
+            confirmButtonAriaLabel: "Thumbs up, great!",
+            cancelButtonText: `
+             no
+            `,
+            cancelButtonAriaLabel: "Thumbs down"
+          }).then((res)=>{
+           if(res.isConfirmed){
+            closeLead( leadId,targetUserId)
+            socket.emit("alertConfirmed", targetUserId ,leadId ,senderId);
+           }else{
+
+           }
+          })
       }
     );
+    socket.on("confirmAlert", 
+    ({  confirmId   ,leadId ,alertId, title, text, icon, confirmButtonText } ) => {
+      console.log("confirmAlert",{ confirmId   ,leadId ,alertId} );
+      alertId === userId &&
+      Swal.fire({
+        
+        title, text, icon, confirmButtonText,
+        showCloseButton: true,
+        showCancelButton: true,
+        focusConfirm: false,
+       
+        confirmButtonAriaLabel: "Thumbs up, great!",
+        cancelButtonText: `
+         no
+        `,
+        cancelButtonAriaLabel: "Thumbs down"
+      }).then((res)=>{
+       if(res.isConfirmed){
+        openLead(leadId,alertId )
+      }else{
+
+       }
+      })
+    }    
+    )
+
+
     return () => {
       socket.off("initialData");
       socket.off("leadOpened");
@@ -112,6 +149,7 @@ const List = () => {
       socket.off("updateLeads");
       socket.off("sendAlertToUser");
       socket.off("receiveAlert");
+      socket.off("alertConfirmed")
     };
   }, [userId]);
 
@@ -206,7 +244,7 @@ const List = () => {
 
                     <td>
                       {leads[el.id]?.user === userId && (
-                        <button onClick={() => closeLead(el.id)}>
+                        <button onClick={() => closeLead(el.id ,userId)}>
                           <FcRemoveImage />
                         </button>
                       )}
@@ -223,7 +261,7 @@ const List = () => {
                                 </button>
                               </Tooltip>
                               <button
-                                onClick={() => sendAlert(leads[el.id]?.user)}
+                                onClick={() => sendAlert(leads[el.id]?.user ,el.id,userId )}
                               >
                                 <FcExternal />
                               </button>
@@ -232,7 +270,7 @@ const List = () => {
                         : !Object.keys(leads).find(
                             (key) => leads[key].user === userId
                           ) && (
-                            <button onClick={() => openLead(el.id)}>
+                            <button onClick={() => openLead(el.id ,userId)}>
                               <FcEditImage />{" "}
                             </button>
                           )}
