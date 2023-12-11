@@ -60,7 +60,6 @@ const socketConnect = async (io, socket) => {
 
   socket.on("sendAlertToUser", (targetUserId, leadId, senderId) => {
     //  targetUserId  AA ,leadId ,senderId BB  AA snend the alrer
-    console.log("send ", targetUserId, leadId, senderId);
     io.emit("receiveAlert", {
       targetUserId: targetUserId,
       leadId: leadId,
@@ -73,13 +72,7 @@ const socketConnect = async (io, socket) => {
   });
   socket.on("alertConfirmed", (targetUserId, leadId, senderId) => {
     //  targetUserId  AA ,leadId ,senderId BB  BB confirm alert and send response
-    console.log(
-      "yes send it =============================",
-      targetUserId,
-      leadId,
-      senderId
-    );
-    // console.log( targetUserId ,leadId ,senderId);
+    
     io.emit("confirmAlert", {
       confirmId: targetUserId,
       leadId: leadId,
