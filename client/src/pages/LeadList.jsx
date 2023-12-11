@@ -14,7 +14,7 @@ import axios from 'axios';
 import { decodedToken } from "../healpers/getDecodedToken";
 
 
-const socket = io("http://192.168.1.107:9000");
+const socket = io("http://192.168.1.76:9000");
 
 const LeadList = () => {
   const [userId, setUserId] = useState("111");
@@ -37,7 +37,6 @@ const LeadList = () => {
   }, []);
 
   useEffect(() => {
-    // Assuming data is an array of elements
     const updatedLeads = {};
     data.forEach((el) => {
       updatedLeads[el?._id] = { user: null }; // Assuming each element has a unique identifier like 'id'
@@ -64,8 +63,8 @@ const LeadList = () => {
     // Request initial leads data when component mounts
     socket.emit("requestInitialData");
 
-    socket.on("initialData", (initialLeads) => {
-      setLeads(() => initialLeads);
+    socket.on("initialData",  (initialLeads) => {
+      setLeads(initialLeads);
     });
     socket.on("leadOpened", ({ leadId, userId }) => {
       setLeads((prevLeads) => ({
@@ -140,7 +139,6 @@ const LeadList = () => {
         icon,
         confirmButtonText,
       }) => {
-        console.log("confirmAlert", { confirmId, leadId, alertId });
         alertId === userId &&
           Swal.fire({
             title,
@@ -156,6 +154,7 @@ const LeadList = () => {
             cancelButtonAriaLabel: "Thumbs down",
           }).then((res) => {
             if (res.isConfirmed) {
+                console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
               openLead(leadId, alertId);
             } else {
             }
@@ -175,7 +174,7 @@ const LeadList = () => {
       socket.off("receiveAlert");
       socket.off("alertConfirmed");
     };
-  }, [userId,leads]);
+  }, [userId]);
 
   const [open, setOpen] = useState(false);
 
