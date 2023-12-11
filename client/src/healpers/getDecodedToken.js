@@ -5,3 +5,15 @@ export const decodedToken = () => {
   const decoded = jwtDecode(token);
   return decoded;
 };
+
+/**
+ *  {
+ *     "user": {
+ *         "username": String,
+ *         "id": String,
+ *         "role": Boolean
+ *     },
+ *     "iat": 1702290552,
+ *     "exp": 1702376952
+ *  }
+ */
