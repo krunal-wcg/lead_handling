@@ -6,8 +6,7 @@ const connectDb = async () => {
     console.log(
       "Database connected successfully : ",
       connect.connection.host,
-      connect.connection.name,
-      " 🚀🚀🚀"
+      connect.connection.name, " 🚀🚀🚀"
     );
   } catch (err) {
     console.log(err);
@@ -16,3 +15,4 @@ const connectDb = async () => {
 };
 
 module.exports = connectDb;
+
