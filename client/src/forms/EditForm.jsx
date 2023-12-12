@@ -1,36 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
-const EditForm = ({ open, setOpen }) => {
-  const [editedPerson, setEditedPerson] = useState({
-    name: "",
-    email: "",
-    role: "",
-    city: "",
-    country: "",
-    phone: "",
-    score: "",
-  });
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditedPerson((prevPerson) => ({
-      ...prevPerson,
-      [name]: value,
-    }));
-  };
+import axios from "axios";
+const EditForm = ({ open, setOpen, currentLead }) => {
+  const [currentData, setCurrentData] = useState({});
 
-  const handleSave = () => {
-    console.log("submit===>", editedPerson);
-    setOpen(false);
-  };
+  useEffect(() => {
+    async function fetchData() {
+      // You can await here
+      await axios
+        .get(`http://192.168.1.107:9000/api/leads/${currentLead}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        })
+        .then((response) => {
+          setCurrentData(response?.data?.data);
+        });
+    }
+
+    fetchData();
+  }, [currentLead]);
+
+  console.log(currentData);
+
   return (
     <div>
       <div
         id="drawer-right-example"
-        className={`fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto bg-white w-[33rem] dark:bg-gray-800 ${open === false ? "transition-transform translate-x-full" : ""
-          }`}
-      // tabindex="-1"
-      // aria-labelledby="drawer-right-label"
+        className={`fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto bg-white w-[33rem] dark:bg-gray-800 ${
+          open === false ? "transition-transform translate-x-full" : ""
+        }`}
+        // tabindex="-1"
+        // aria-labelledby="drawer-right-label"
       >
         <h5
           id="drawer-right-label"
@@ -76,14 +76,15 @@ const EditForm = ({ open, setOpen }) => {
         <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-md shadow-md">
           <h2 className="text-2xl font-bold mb-4">Edit Person</h2>
           <Formik
+          enableReinitialize
             initialValues={{
-              name: "",
-              email: "",
-              role: "",
-              city: "",
-              country: "",
-              phone: 0,
-              score: "",
+              name: currentData?.name || "",
+              email: currentData?.email || "",
+              role: currentData?.role || "",
+              city: currentData?.city || "",
+              country: currentData?.country || "",
+              phone: currentData?.phone || "",
+              score: currentData?.score || "",
             }}
             validationSchema={Yup.object({
               name: Yup.string()
@@ -98,11 +99,16 @@ const EditForm = ({ open, setOpen }) => {
               phone: Yup.number().nullable(true).required("Required"),
               score: Yup.number().nullable(true).required("Required"),
             })}
-            onSubmit={(values, { setSubmitting }) => {
-              setTimeout(() => {
-                alert(JSON.stringify(values, null, 2));
-                setSubmitting(false);
-              }, 400);
+            onSubmit={ async(values) => {
+           
+              await axios
+              .put(`http://192.168.1.107:9000/api/leads/${currentLead}`,values ,{
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+               
+              })
+              .then((response) => {
+                setOpen(false)
+              });
             }}
           >
             {(formik) => (
@@ -113,6 +119,9 @@ const EditForm = ({ open, setOpen }) => {
                   </label>
                   <input
                     type="text"
+                    // value={formik.values?.name}
+                    // id="name"
+                    // name="name"
                     {...formik.getFieldProps("name")}
                     className="w-full border rounded-md px-3 py-2"
                   />
@@ -206,8 +215,7 @@ const EditForm = ({ open, setOpen }) => {
                 </div>
 
                 <button
-                  type="button"
-                  onClick={handleSave}
+                  type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                 >
                   Save

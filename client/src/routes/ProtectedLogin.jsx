@@ -10,7 +10,7 @@ const ProtectedLogin = ({ children }) => {
  
     return children;
   }
-  return <Navigate to="/signup" replace />;
+  return <Navigate to="/signin" replace />;
 };
 
 export default ProtectedLogin;
