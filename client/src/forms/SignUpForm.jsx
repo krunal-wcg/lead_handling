@@ -74,7 +74,7 @@ export default function SignUpForm() {
                     value={values.username}
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    className={`focus:ring-0 w-full border-none rounded bg-cyan-950 text-sm space-y-5 text-gray-100`}
+                    className={`focus:ring-0 w-full border-none rounded bg-cyan-950 text-sm p-3 text-gray-100`}
                   />
                 </label>
               </div>
@@ -98,7 +98,7 @@ export default function SignUpForm() {
                     value={values.email}
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    className={`focus:ring-0 w-full border-none rounded bg-cyan-950 text-sm space-y-5 text-gray-100`}
+                    className={`focus:ring-0 w-full border-none rounded bg-cyan-950 text-sm p-3 text-gray-100`}
                   />
                 </label>
               </div>
@@ -123,7 +123,7 @@ export default function SignUpForm() {
                       value={values.password}
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      className={`focus:ring-0 w-full border-none rounded bg-cyan-950 text-sm space-y-5 text-gray-100`}
+                      className={`focus:ring-0 w-full border-none rounded bg-cyan-950 text-sm p-3 text-gray-100`}
                     />
                   </label>
                   <span
@@ -152,7 +152,7 @@ export default function SignUpForm() {
               <div className="w-100 gap-2">
                 <button
                   onClick={() => handleSubmit}
-                  className="mb-5 select-none hover:text-white w-full transform border-none bg-cyan-950 rounded p-1 text-gray-400 transition duration-300 active:scale-95"
+                  className="mb-5 select-none hover:text-white w-full transform border-none bg-cyan-950 rounded p-3 text-gray-400 transition duration-300 active:scale-95"
                 >
                   <span> {loading ? "..." : "Sign Up"}</span>
                 </button>
