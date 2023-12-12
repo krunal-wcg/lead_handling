@@ -1,0 +1,281 @@
+[
+  {
+    "email": "femil.p@webcodegenie.net",
+    "name": "imfemil",
+    "skill": "Proficient",
+    "tournament_id": [
+      "657016d2f2330d8b000069fb",
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "milan.g@webcodegenie.net",
+    "name": "MilanG",
+    "skill": "Expert",
+    "tournament_id": [
+      "657016d2f2330d8b000069fb",
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "krunal.b@webcodegenie.net",
+    "name": "krunal",
+    "skill": "Competent",
+    "tournament_id": [
+      "657016d2f2330d8b000069fb",
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "johndoe@wcg.com",
+    "name": "John Doe",
+    "skill": "Expert",
+    "tournament_id": [
+      "657016d2f2330d8b000069fb",
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Julie@wcg.com",
+    "name": "Julie",
+    "skill": "Competent",
+    "tournament_id": [
+      "657016d2f2330d8b000069fb",
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Alice@wcg.com",
+    "name": "Alice",
+    "skill": "Advanced Beginner",
+    "tournament_id": [
+      "657016d2f2330d8b000069fb",
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Bob@wcg.com",
+    "name": "Bob",
+    "skill": "Novice",
+    "tournament_id": [
+      "657016d2f2330d8b000069fb",
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Charlie@wcg.com",
+    "name": "Charlie",
+    "skill": "Proficient",
+    "tournament_id": [
+      "657016d2f2330d8b000069fb",
+      "6570170ff2330d8b00006a00",
+      "6570174bf2330d8b00006a04"
+    ]
+  },
+  {
+    "email": "David@wcg.com",
+    "name": "David",
+    "skill": "Advanced Beginner",
+    "tournament_id": [
+      "657016d2f2330d8b000069fb",
+      "6570170ff2330d8b00006a00",
+      "6570174bf2330d8b00006a04"
+    ]
+  },
+  {
+    "email": "Eva@wcg.com",
+    "name": "Eva",
+    "skill": "Novice",
+    "tournament_id": [
+      "657016d2f2330d8b000069fb",
+      "6570170ff2330d8b00006a00",
+      "6570174bf2330d8b00006a04"
+    ]
+  },
+  {
+    "email": "Frank@wcg.com",
+    "name": "Frank",
+    "skill": "Expert",
+    "tournament_id": [
+      "657016d2f2330d8b000069fb",
+      "6570170ff2330d8b00006a00",
+      "6570174bf2330d8b00006a04"
+    ]
+  },
+  {
+    "email": "Grace@wcg.com",
+    "name": "Grace",
+    "skill": "Proficient",
+    "tournament_id": [
+      "6570170ff2330d8b00006a00",
+      "6570174bf2330d8b00006a04"
+    ]
+  },
+  {
+    "email": "Harry@wcg.com",
+    "name": "Harry",
+    "skill": "Novice",
+    "tournament_id": [
+      "6570170ff2330d8b00006a00",
+      "6570174bf2330d8b00006a04"
+    ]
+  },
+  {
+    "email": "Isaac@wcg.com",
+    "name": "Isaac",
+    "skill": "Advanced Beginner",
+    "tournament_id": [
+      "6570170ff2330d8b00006a00",
+      "6570174bf2330d8b00006a04"
+    ]
+  },
+  {
+    "email": "Jessica@wcg.com",
+    "name": "Jessica",
+    "skill": "Competent",
+    "tournament_id": [
+      "6570170ff2330d8b00006a00",
+      "6570174bf2330d8b00006a04"
+    ]
+  },
+  {
+    "email": "Kevin@wcg.com",
+    "name": "Kevin",
+    "skill": "Novice",
+    "tournament_id": [
+      "6570170ff2330d8b00006a00",
+      "6570174bf2330d8b00006a04"
+    ]
+  },
+  {
+    "email": "Lily@wcg.com",
+    "name": "Lily",
+    "skill": "Advanced Beginner",
+    "tournament_id": [
+      "6570170ff2330d8b00006a00",
+      "6570174bf2330d8b00006a04"
+    ]
+  },
+  {
+    "email": "Mike@wcg.com",
+    "name": "Mike",
+    "skill": "Competent",
+    "tournament_id": [
+      "6570170ff2330d8b00006a00",
+      "6570174bf2330d8b00006a04"
+    ]
+  },
+  {
+    "email": "Natalie@wcg.com",
+    "name": "Natalie",
+    "skill": "Proficient",
+    "tournament_id": [
+      "6570170ff2330d8b00006a00",
+      "6570174bf2330d8b00006a04"
+    ]
+  },
+  {
+    "email": "Oliver@wcg.com",
+    "name": "Oliver",
+    "skill": "Expert",
+    "tournament_id": [
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Penelope@wcg.com",
+    "name": "Penelope",
+    "skill": "Novice",
+    "tournament_id": [
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Quincy@wcg.com",
+    "name": "Quincy",
+    "skill": "Advanced Beginner",
+    "tournament_id": [
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Rachel@wcg.com",
+    "name": "Rachel",
+    "skill": "Competent",
+    "tournament_id": [
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Sam@wcg.com",
+    "name": "Sam",
+    "skill": "Novice",
+    "tournament_id": [
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Tina@wcg.com",
+    "name": "Tina",
+    "skill": "Advanced Beginner",
+    "tournament_id": [
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Ulysses@wcg.com",
+    "name": "Ulysses",
+    "skill": "Proficient",
+    "tournament_id": [
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Victoria@wcg.com",
+    "name": "Victoria",
+    "skill": "Expert",
+    "tournament_id": [
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Walter@wcg.com",
+    "name": "Walter",
+    "skill": "Novice",
+    "tournament_id": [
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Xenia@wcg.com",
+    "name": "Xenia",
+    "skill": "Competent",
+    "tournament_id": [
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Ammine@wcg.com",
+    "name": "Ammine",
+    "skill": "Advanced Beginner",
+    "tournament_id": [
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "Mack@wcg.com",
+    "name": "Mack",
+    "skill": "Proficient",
+    "tournament_id": [
+      "6571650c776bdc9a49bb0977"
+    ]
+  },
+  {
+    "email": "sinem@wcg.com",
+    "name": "Sinemis",
+    "skill": "Competent",
+    "tournament_id": [
+      "6571650c776bdc9a49bb0977"
+    ]
+  }
+]
