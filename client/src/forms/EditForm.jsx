@@ -11,7 +11,6 @@ const EditForm = ({ open, setOpen }) => {
     phone: "",
     score: "",
   });
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditedPerson((prevPerson) => ({
