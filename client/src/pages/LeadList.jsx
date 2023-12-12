@@ -15,7 +15,7 @@ import axios from 'axios';
 import { decodedToken } from "../healpers/getDecodedToken";
 
 
-const socket = io("http://192.168.1.107:9000");
+const socket = io("http://192.168.1.76:9000");
 
 const LeadList = () => {
   const [userId, setUserId] = useState("111");
@@ -23,12 +23,48 @@ const LeadList = () => {
   const [role, setRole] = useState("");
   const [loading, setLoading] = useState(!1);
   const [data, setData] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [currentLead, setCurrentLead] = useState("")
+
+  useEffect(() => {
+    var token = decodedToken();
+    setUserId(token?.user?.username);
+    setRole(token?.user?.role);
+  }, []);
+
+
+
+  useEffect(() => {
+    const updatedLeads = {};
+    data.forEach((el) => {
+      updatedLeads[el?._id] = { user: null }; // Assuming each element has a unique identifier like 'id'
+    });
+
+    setLeads(updatedLeads);
+
+  }, [data]);
+
   const nav = useNavigate()
+
+  useEffect(() => {
+    setLoading(!0);
+    async function fetchData() {
+      // You can await here
+      await axios.get(`http://192.168.1.107:9000/api/leads`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }).then((response) => {
+        setLoading(!1);
+        setData(response?.data?.leads);
+      }).catch(err => {
+        console.log(err.response.data)
+        nav("/dashboard")
+      });
+    }
+
+     fetchData();
+  }, []);
 
   const openLead = (leadId, senderID) => {
     setOpen(true);
     socket.emit("openLead", leadId, senderID);
+    setCurrentLead(leadId)
   };
 
   const closeLead = (leadId, closerID) => {
@@ -185,16 +221,11 @@ const LeadList = () => {
   }, [userId]);
 
 
-
-  useEffect(() => {
-    const updatedLeads = {};
-    data.forEach((el) => {
-      updatedLeads[el?._id] = { user: null }; // Assuming each element has a unique identifier like 'id'
-    });
-
-    setLeads(updatedLeads);
-  }, [data]);
-
+   
+  
+  
+  const [open, setOpen] = useState(false);
+ 
   return data && !loading && (
     <>
       <section className="lg:ml-60 max-lg:m-2 text-gray-600 body-font">
@@ -310,7 +341,7 @@ const LeadList = () => {
       </section>
 
       {/* <!-- drawer component --> */}
-      <EditForm open={open} setOpen={setOpen} />
+      <EditForm open={open} setOpen={setOpen} currentLead={currentLead} />
     </>
   );
 };
