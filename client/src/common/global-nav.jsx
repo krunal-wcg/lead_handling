@@ -11,7 +11,7 @@ import Byline from "./byline";
 export function GlobalNav() {
   const [isOpen, setIsOpen] = useState(false);
   const close = () => setIsOpen(false);
-  const isAdmin = decodedToken()
+  const isAdmin = decodedToken()?.user;
 
   return (
     <>
@@ -90,7 +90,7 @@ function GlobalNavItem({
 
   const isActive = item.slug === location?.pathname?.split("/")[1];
 
-  return (!item?.user || isAdmin?.user?.role) && (
+  return (!item?.user || isAdmin?.role) && (
     <Link
       onClick={close}
       to={`/${item?.slug}`}

@@ -23,21 +23,8 @@ const LeadList = () => {
   const [role, setRole] = useState("");
   const [loading, setLoading] = useState(!1);
   const [data, setData] = useState([]);
-
-  useEffect(() => {
-    var token = decodedToken();
-    setUserId(token?.user?.username);
-    setRole(token?.user?.role);
-  }, []);
-
-  useEffect(() => {
-    const updatedLeads = {};
-    data.forEach((el) => {
-      updatedLeads[el?._id] = { user: null }; // Assuming each element has a unique identifier like 'id'
-    });
-
-    setLeads(updatedLeads);
-  }, [data]);
+  const [open, setOpen] = useState(false);
+  const nav = useNavigate()
 
   const openLead = (leadId, senderID) => {
     setOpen(true);
@@ -50,8 +37,43 @@ const LeadList = () => {
   };
   const sendAlert = (targetUserId, sendleadId, senderId) => {
     socket.emit("sendAlertToUser", targetUserId, sendleadId, senderId);
-    console.log(targetUserId, sendleadId, senderId);
   };
+
+
+  useEffect(() => {
+    setLoading(!0);
+    async function fetchData() {
+      // You can await here
+      await axios.get(`http://192.168.1.107:9000/api/leads`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }).then((response) => {
+        setLoading(!1);
+        setData(response?.data?.leads);
+      }).catch(err => {
+        console.log(err.response.data)
+        nav("/dashboard")
+      });
+    }
+
+    leads && fetchData();
+  }, []);
+
+  useEffect(() => {
+    var token = decodedToken();
+    setUserId(token?.user?.username);
+    setRole(token?.user?.role);
+  }, []);
+
+
+  useEffect(() => {
+    // Request initial leads data when component mounts
+    socket.emit("requestInitialData");
+
+    socket.on("initialData", (initialLeads) => {
+      setLeads(initialLeads);
+    });
+    return () => {
+      socket.off("initialData");
+    };
+  }, [data]);
 
   useEffect(() => {
 
@@ -92,7 +114,6 @@ const LeadList = () => {
         icon,
         confirmButtonText,
       }) => {
-        console.log("receiveAlert", targetUserId, leadId, senderId);
         targetUserId === userId &&
           Swal.fire({
             title,
@@ -163,35 +184,16 @@ const LeadList = () => {
     };
   }, [userId]);
 
-  useEffect(() => {
-    // Request initial leads data when component mounts
-    socket.emit("requestInitialData");
 
-    socket.on("initialData", (initialLeads) => {
-      setLeads(initialLeads);
+
+  useEffect(() => {
+    const updatedLeads = {};
+    data.forEach((el) => {
+      updatedLeads[el?._id] = { user: null }; // Assuming each element has a unique identifier like 'id'
     });
-    return () => {
-      socket.off("initialData");
-    };
-  }, [leads]);
-  const [open, setOpen] = useState(false);
-  const nav = useNavigate()
 
-  useEffect(() => {
-    setLoading(!0);
-    async function fetchData() {
-      // You can await here
-      await axios.get(`http://192.168.1.107:9000/api/leads`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }).then((response) => {
-        setLoading(!1);
-        setData(response?.data?.leads);
-      }).catch(err => {
-        console.log(err.response.data)
-        nav("/dashboard")
-      });
-    }
-
-    leads && fetchData();
-  }, []);
+    setLeads(updatedLeads);
+  }, [data]);
 
   return data && !loading && (
     <>
@@ -262,7 +264,7 @@ const LeadList = () => {
                         </button>
                       )}
                       {leads[el?._id]?.user
-                        ? leads[el?._id]?.user != userId && (
+                        ? leads[el?._id]?.user !== userId && (
                           <div className="flex">
                             {" "}
                             <Tooltip message={` ${leads[el?._id].user}`}>
