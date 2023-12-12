@@ -7,6 +7,7 @@ import {
   FcExternal,
   FcRemoveImage,
 } from "react-icons/fc";
+import { useNavigate } from 'react-router-dom';
 
 import Tooltip from "../common/Tooltip";
 import EditForm from "../forms/EditForm";
@@ -174,6 +175,7 @@ const LeadList = () => {
     };
   }, [leads]);
   const [open, setOpen] = useState(false);
+  const nav = useNavigate()
 
   useEffect(() => {
     setLoading(!0);
@@ -182,6 +184,9 @@ const LeadList = () => {
       await axios.get(`http://192.168.1.107:9000/api/leads`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }).then((response) => {
         setLoading(!1);
         setData(response?.data?.leads);
+      }).catch(err => {
+        console.log(err.response.data)
+        nav("/dashboard")
       });
     }
 
@@ -190,18 +195,17 @@ const LeadList = () => {
 
   return data && !loading && (
     <>
-      <section className="text-gray-600 body-font">
+      <section className="lg:ml-60 max-lg:m-2 text-gray-600 body-font">
         <div className=" px-2 py-24 mx-auto">
           <div className="flex flex-col text-center w-full mb-20">
             <h1 className="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">
               Lead List
             </h1>
-            <p className="lg:w-2/3 mx-auto leading-relaxed text-base">
-              {" "}
+            <p className="lg:w-5/6 mx-auto leading-relaxed text-base">
               List of the Leads
             </p>
           </div>
-          <div className="lg:w-2/3 w-full mx-auto overflow-auto">
+          <div className="lg:w-5/6 w-full mx-auto overflow-auto">
             <table className="table-auto w-full text-left whitespace-no-wrap">
               <thead>
                 <tr className="border-b-4 border-stone-700">
