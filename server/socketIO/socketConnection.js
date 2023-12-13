@@ -95,15 +95,5 @@ const socketConnect = async (io, socket) => {
       socket.broadcast.emit("updateLeads", leads);
     }
   });
-
-  let timeChange;
-  socket.on("timeSpentData", (socket) => {
-    // Respond with the current leads data when requested
-    console.log("okay");
-    if (timeChange) {
-      clearInterval(timeChange);
-    }
-    setInterval(() => socket.emit("timeRequest", new Data()), 1000);
-  });
 };
 module.exports = socketConnect;

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import {
@@ -28,8 +29,6 @@ const LeadList = () => {
     setUserId(token?.user?.username);
     setRole(token?.user?.role);
   }, []);
-
-
 
   useEffect(() => {
     const updatedLeads = {};
@@ -89,13 +88,6 @@ const LeadList = () => {
 
     leads && fetchData();
   }, []);
-
-  useEffect(() => {
-    var token = decodedToken();
-    setUserId(token?.user?.username);
-    setRole(token?.user?.role);
-  }, []);
-
 
   useEffect(() => {
     // Request initial leads data when component mounts

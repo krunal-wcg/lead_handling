@@ -25,6 +25,11 @@ const createLead = asyncHandler(async (req, res) => {
   }
 
   const lead = await Leads.create({ name, email, role, city, country, phone });
+  const chart = await Chart.create({
+    leadId: lead?._id,
+    leadName: name,
+    lead: [],
+  });
 
   if (lead) {
     res.status(201).json({

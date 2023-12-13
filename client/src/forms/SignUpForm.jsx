@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { Form, Formik } from "formik";
-import * as Yup from "yup";
 import axios from "axios";
-import { FaEyeSlash, FaEye } from "react-icons/fa6";
+import { Form, Formik } from "formik";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import * as Yup from "yup";
 
 // Creating schema
 const schema = Yup.object({
@@ -138,16 +138,6 @@ export default function SignUpForm() {
                   </span>
                 </div>
               </div>
-              {/* 
-                <label className="mt-8 flex content-start">
-                  <input
-                    type="checkbox"
-                    name="remember"
-                    className="mr-2 form-checkbox rounded-none ring-0 focus:border-tan-500 border-black border-2 w-5 h-5 text-highlight"
-                  />
-                  <span className="text-sm font-semibold">Remember me</span>
-                </label> 
-                */}
 
               <div className="w-100 gap-2">
                 <button
