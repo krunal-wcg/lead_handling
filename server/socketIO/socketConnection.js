@@ -61,27 +61,26 @@ const socketConnect = async (io, socket) => {
     }
   });
 
-  socket.on("closeLead", (leadId, userId) => {
-
-    console.log("dsdsd",leadId);
+  socket.on("closeLead", async (leadId, userId) => {
     if (userLeads[userId] === leadId) {
       leads[leadId].user = null;
       userLeads[userId] = null;
-      socket.emit("leadClosed", leadId);
-      socket.broadcast.emit("updateLeads", leads);
+      await socket.emit("leadClosed", leadId);
+      await  socket.broadcast.emit("updateLeads", leads);
 
       // Stop the timer when the lead is closed
       if (leadTimers[leadId] && leadTimers[leadId].timerId) {
         clearInterval(leadTimers[leadId].timerId);
         leadTimers[leadId].timerId = null;
       }
-      console.log("dsdsd",leadId);
       // Emit the total elapsed time when the lead is closed
-      io.emit("leadTimerClosed", {
+      await io.emit("leadTimerClosed", {
         userId,
         leadId,
         elapsedTime: Date.now() - leadTimers[leadId].start,
       });
+
+      await io.emit("getChart");
     }
   });
 
