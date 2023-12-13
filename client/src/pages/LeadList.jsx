@@ -7,14 +7,13 @@ import {
   FcExternal,
   FcRemoveImage,
 } from "react-icons/fc";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 import Tooltip from "../common/Tooltip";
 import EditForm from "../forms/EditForm";
-import axios from 'axios';
+import axios from "axios";
 import { decodedToken } from "../healpers/getDecodedToken";
 import { socket } from "../healpers/socket";
-
 
 const LeadList = () => {
   const [userId, setUserId] = useState("111");
@@ -22,11 +21,11 @@ const LeadList = () => {
   const [role, setRole] = useState("");
   const [loading, setLoading] = useState(!1);
   const [data, setData] = useState([]);
-  const [currentLead, setCurrentLead] = useState("")
+  const [currentLead, setCurrentLead] = useState("");
 
   useEffect(() => {
     var token = decodedToken();
-    setUserId(token?.user?.username);
+    setUserId(token?.user?.id);
     setRole(token?.user?.role);
   }, []);
 
@@ -37,22 +36,26 @@ const LeadList = () => {
     });
 
     setLeads(updatedLeads);
-
   }, [data]);
 
-  const nav = useNavigate()
+  const nav = useNavigate();
 
   useEffect(() => {
     setLoading(!0);
     async function fetchData() {
       // You can await here
-      await axios.get(`http://192.168.1.107:9000/api/leads`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }).then((response) => {
-        setLoading(!1);
-        setData(response?.data?.leads);
-      }).catch(err => {
-        console.log(err.response.data)
-        nav("/dashboard")
-      });
+      await axios
+        .get(`http://192.168.1.107:9000/api/leads`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        })
+        .then((response) => {
+          setLoading(!1);
+          setData(response?.data?.leads);
+        })
+        .catch((err) => {
+          console.log(err.response.data);
+          nav("/dashboard");
+        });
     }
 
     fetchData();
@@ -61,10 +64,10 @@ const LeadList = () => {
   const openLead = (leadId, senderID) => {
     setOpen(true);
     socket.emit("openLead", leadId, senderID);
-    setCurrentLead(leadId)
+    setCurrentLead(leadId);
   };
 
-  const closeLead = (leadId, closerID) => {
+  const closeLead = (leadId, closerID ) => {
     setOpen(false);
     socket.emit("closeLead", leadId, closerID);
   };
@@ -72,22 +75,27 @@ const LeadList = () => {
     socket.emit("sendAlertToUser", targetUserId, sendleadId, senderId);
   };
 
-
   useEffect(() => {
     setLoading(!0);
     async function fetchData() {
       // You can await here
-      await axios.get(`http://192.168.1.107:9000/api/leads`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }).then((response) => {
-        setLoading(!1);
-        setData(response?.data?.leads);
-      }).catch(err => {
-        console.log(err.response.data)
-        nav("/dashboard")
-      });
+      await axios
+        .get(`http://192.168.1.107:9000/api/leads`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        })
+        .then((response) => {
+          setLoading(!1);
+          setData(response?.data?.leads);
+        })
+        .catch((err) => {
+          console.log(err.response.data);
+          nav("/dashboard");
+        });
     }
 
     leads && fetchData();
   }, []);
+
 
   useEffect(() => {
     // Request initial leads data when component mounts
@@ -102,7 +110,6 @@ const LeadList = () => {
   }, [data]);
 
   useEffect(() => {
-
     socket.on("leadOpened", ({ leadId, userId }) => {
       setLeads((prevLeads) => ({
         ...prevLeads,
@@ -197,6 +204,29 @@ const LeadList = () => {
       }
     );
 
+    // let leadIdBeingClosed = null; // To track the lead being closed for displaying time
+
+    socket.on("leadTimerUpdate", ({ leadId, elapsedTime }) => {
+      // Update the UI with the elapsed time during the lead being open
+      // Optionally, you can display this in real-time on the UI
+    });
+
+    socket.on("leadTimerClosed", ({ userId, leadId, elapsedTime }) => {
+      const time = Math.floor(elapsedTime / 1000);
+
+      const Payload = {
+        userId: userId,
+        totalSpentTime: time,
+      };
+      axios
+        .put(`http://192.168.1.107:9000/api/leads/chart/${leadId}`, Payload, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        })
+        .then((response) => {
+         console.log(response)
+        });
+    });
+
     return () => {
       socket.off("leadOpened");
       socket.off("leadClosed");
@@ -207,132 +237,134 @@ const LeadList = () => {
       socket.off("sendAlertToUser");
       socket.off("receiveAlert");
       socket.off("alertConfirmed");
+      socket.off("leadTimerUpdate");
+      socket.off("leadTimerClosed");
     };
   }, [userId]);
 
-
-
-
-
   const [open, setOpen] = useState(false);
 
-  return data && !loading && (
-    <>
-      <section className="lg:ml-60 max-lg:m-2 text-gray-600 body-font">
-        <div className=" px-2 py-24 mx-auto">
-          <div className="flex flex-col text-center w-full mb-20">
-            <h1 className="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">
-              Lead List
-            </h1>
-            <p className="lg:w-5/6 mx-auto leading-relaxed text-base">
-              List of the Leads
-            </p>
-          </div>
-          <div className="lg:w-5/6 w-full mx-auto overflow-auto">
-            <table className="table-auto w-full text-left whitespace-no-wrap">
-              <thead>
-                <tr className="border-b-4 border-stone-700">
-                  <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">
-                    name
-                  </th>
-                  <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                    email
-                  </th>
-                  <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                    role
-                  </th>
-                  <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                    city
-                  </th>
-                  {/* <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"> city</th> */}
-                  <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br">
-                    country
-                  </th>
-                  <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br">
-                    phone no
-                  </th>
-                  <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br">
-                    score
-                  </th>
-                  <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br">
-                    action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {data?.map((el) => (
-                  <tr
-                    key={el?._id}
-                    className={`${leads[el?._id]?.user === userId
-                      ? "bg-green-100"
-                      : leads[el?._id]?.user
-                        ? "bg-yellow-100"
-                        : ""
+  return (
+    data &&
+    !loading && (
+      <>
+        <section className="lg:ml-60 max-lg:m-2 text-gray-600 body-font">
+          <div className=" px-2 py-24 mx-auto">
+            <div className="flex flex-col text-center w-full mb-20">
+              <h1 className="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">
+                Lead List
+              </h1>
+              <p className="lg:w-5/6 mx-auto leading-relaxed text-base">
+                List of the Leads
+              </p>
+            </div>
+            <div className="lg:w-5/6 w-full mx-auto overflow-auto">
+              <table className="table-auto w-full text-left whitespace-no-wrap">
+                <thead>
+                  <tr className="border-b-4 border-stone-700">
+                    <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">
+                      name
+                    </th>
+                    <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                      email
+                    </th>
+                    <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                      role
+                    </th>
+                    <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                      city
+                    </th>
+                    {/* <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"> city</th> */}
+                    <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br">
+                      country
+                    </th>
+                    <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br">
+                      phone no
+                    </th>
+                    <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br">
+                      score
+                    </th>
+                    <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br">
+                      action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.map((el) => (
+                    <tr
+                      key={el?._id}
+                      className={`${
+                        leads[el?._id]?.user === userId
+                          ? "bg-green-100"
+                          : leads[el?._id]?.user
+                          ? "bg-yellow-100"
+                          : ""
                       } border-b-2 border-cyan-500 `}
-                  >
-                    <td className="px-4 py-3">{el?.name}</td>
-                    <td className="px-4 py-3">{el?.email}</td>
-                    <td className="px-4 py-3">{el?.role}</td>
-                    <td className="px-4 py-3">{el?.city}</td>
-                    <td className="px-4 py-3">{el?.country}</td>
-                    <td className="px-4 py-3">{el?.phone}</td>
-                    <td className="px-4 py-3">{el?.score}</td>
+                    >
+                      <td className="px-4 py-3">{el?.name}</td>
+                      <td className="px-4 py-3">{el?.email}</td>
+                      <td className="px-4 py-3">{el?.role}</td>
+                      <td className="px-4 py-3">{el?.city}</td>
+                      <td className="px-4 py-3">{el?.country}</td>
+                      <td className="px-4 py-3">{el?.phone}</td>
+                      <td className="px-4 py-3">{el?.score}</td>
 
-                    <td>
-                      {leads[el?._id]?.user === userId && (
-                        <button onClick={() => closeLead(el?._id, userId)}>
-                          <FcRemoveImage />
-                        </button>
-                      )}
-                      {leads[el?._id]?.user
-                        ? leads[el?._id]?.user !== userId && (
-                          <div className="flex">
-                            {" "}
-                            <Tooltip message={` ${leads[el?._id].user}`}>
-                              <button
-                                data-tooltip-target="tooltip-default"
-                                type="button"
-                              >
-                                <FcCompactCamera />
-                              </button>
-                            </Tooltip>
-                            {!Object.keys(leads).find(
-                              (key) => leads[key].user === userId
-                            ) &&
-                              role && (
-                                <button
-                                  onClick={() =>
-                                    sendAlert(
-                                      leads[el?._id]?.user,
-                                      el?._id,
-                                      userId
-                                    )
-                                  }
-                                >
-                                  <FcExternal />
-                                </button>
-                              )}
-                          </div>
-                        )
-                        : !Object.keys(leads).find(
-                          (key) => leads[key].user === userId
-                        ) && (
-                          <button onClick={() => openLead(el?._id, userId)}>
-                            <FcEditImage />{" "}
+                      <td>
+                        {leads[el?._id]?.user === userId && (
+                          <button onClick={() => closeLead(el?._id, userId,)}>
+                            <FcRemoveImage />
                           </button>
                         )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                        {leads[el?._id]?.user
+                          ? leads[el?._id]?.user !== userId && (
+                              <div className="flex">
+                                {" "}
+                                <Tooltip message={` ${leads[el?._id].user}`}>
+                                  <button
+                                    data-tooltip-target="tooltip-default"
+                                    type="button"
+                                  >
+                                    <FcCompactCamera />
+                                  </button>
+                                </Tooltip>
+                                {!Object.keys(leads).find(
+                                  (key) => leads[key].user === userId
+                                ) &&
+                                  role && (
+                                    <button
+                                      onClick={() =>
+                                        sendAlert(
+                                          leads[el?._id]?.user,
+                                          el?._id,
+                                          userId
+                                        )
+                                      }
+                                    >
+                                      <FcExternal />
+                                    </button>
+                                  )}
+                              </div>
+                            )
+                          : !Object.keys(leads).find(
+                              (key) => leads[key].user === userId
+                            ) && (
+                              <button onClick={() => openLead(el?._id, userId)}>
+                                <FcEditImage />{" "}
+                              </button>
+                            )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* <!-- drawer component --> */}
-      <EditForm open={open} setOpen={setOpen} currentLead={currentLead} />
-    </>
+        {/* <!-- drawer component --> */}
+        <EditForm open={open} setOpen={setOpen} currentLead={currentLead}/>
+      </>
+    )
   );
 };
 

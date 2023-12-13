@@ -144,7 +144,6 @@ const createChartData = asyncHandler(async (req, res) => {
   const userAvailable = await User.findById(userId);
   const chartAvailable = await Chart.findOne({ leadId: leadId });
 
-  console.log(chartAvailable);
   if (chartAvailable) {
     res.status(400).json({
       message: "Data already available",
