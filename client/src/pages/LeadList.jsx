@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { io } from "socket.io-client";
 import Swal from "sweetalert2";
 import {
   FcCompactCamera,
@@ -13,9 +12,8 @@ import Tooltip from "../common/Tooltip";
 import EditForm from "../forms/EditForm";
 import axios from 'axios';
 import { decodedToken } from "../healpers/getDecodedToken";
+import { socket } from "../healpers/socket";
 
-
-const socket = io("http://192.168.1.76:9000");
 
 const LeadList = () => {
   const [userId, setUserId] = useState("111");
@@ -58,7 +56,7 @@ const LeadList = () => {
       });
     }
 
-     fetchData();
+    fetchData();
   }, []);
 
   const openLead = (leadId, senderID) => {
@@ -221,11 +219,11 @@ const LeadList = () => {
   }, [userId]);
 
 
-   
-  
-  
+
+
+
   const [open, setOpen] = useState(false);
- 
+
   return data && !loading && (
     <>
       <section className="lg:ml-60 max-lg:m-2 text-gray-600 body-font">

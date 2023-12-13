@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const Leads = require("../models/leadsModel");
+const Chart = require("../models/chartModel");
+const User = require("../models/userModel");
 
 /**
  * @desc Create Lead
@@ -115,10 +117,127 @@ const deleteLead = asyncHandler(async (req, res) => {
   res.status(200).json(lead); // Sending the deleted lead as a JSON response
 });
 
+/**
+ * @desc Get all Chart data
+ * @route GET /api/leads/chart
+ * @access private
+ **/
+const getAllChartData = asyncHandler(async (req, res) => {
+  const chartData = await Chart.find();
+  res.status(200).json({ data: chartData });
+});
+
+/**
+ * @desc Create Chart Data
+ * @route POST /api/leads/chart
+ * @access public
+ */
+const createChartData = asyncHandler(async (req, res) => {
+  const { leadId, userId, totalSpentTime } = req.body;
+
+  const leadAvailable = await Leads.findById(leadId);
+  const userAvailable = await User.findById(userId);
+  const chartAvailable = await Chart.findOne({ leadId: leadId });
+
+  console.log(chartAvailable);
+  if (chartAvailable) {
+    res.status(400).json({
+      message: "Data already available",
+    });
+    throw new Error("Lead already available!");
+  }
+
+  if (!leadAvailable) {
+    res.status(400);
+    throw new Error("lead not available!");
+  }
+
+  const chart = await Chart.create({
+    leadId: leadId,
+    leadName: leadAvailable?.name,
+    lead: [
+      {
+        userId: userAvailable?._id,
+        userName: userAvailable?.username,
+        totalSpentTime: totalSpentTime,
+      },
+    ],
+  });
+
+  if (chart) {
+    res.status(201).json({
+      message: "Data created successfully ✅",
+      chart,
+    });
+  } else {
+    res.status(400);
+    throw new Error("Lead data is not valid");
+  }
+});
+
+/**
+ * @desc Create Chart Data
+ * @route POST /api/leads/chart
+ * @access public
+ */
+const updateChartData = asyncHandler(async (req, res) => {
+  const { userId, totalSpentTime } = req.body;
+  var leadId = req.params.leadId;
+
+  const leadAvailable = await Leads.findById(leadId);
+  const userAvailable = await User.findById(userId);
+  const chartAvailable = await Chart.findOne({ leadId: leadId });
+  const userExists = await Chart.find(
+    { "lead.userId": userId, leadId: leadId },
+    { _id: 0, lead: { $elemMatch: { userId: userId } } }
+  );
+
+  if (!leadAvailable) {
+    res.status(400);
+    throw new Error("Lead not found!");
+  }
+
+  const updatedChartData = !!userExists.length
+    ? await Chart.updateOne(
+        {
+          _id: chartAvailable?._id,
+          "lead.userId": userId,
+          "lead._id": userExists[0]?.lead[0]?._id,
+        },
+        {
+          $set: {
+            "lead.$.totalSpentTime":
+              totalSpentTime + userExists[0]?.lead[0]?.totalSpentTime,
+          },
+        }
+      )
+    : await Chart.findByIdAndUpdate(
+        chartAvailable?._id,
+        {
+          leadId: leadId,
+          leadName: leadAvailable?.name,
+          lead: [
+            ...chartAvailable?.lead,
+            {
+              userId: userId,
+              userName: userAvailable?.username,
+              totalSpentTime: totalSpentTime || 0,
+            },
+          ],
+        },
+        { new: true }
+      );
+
+  res.status(200).json(updatedChartData);
+});
+
 module.exports = {
   createLead,
   leads,
   getLead,
   updateLead,
   deleteLead,
+  getAllChartData,
+  createChartData,
+  updateChartData,
 };
