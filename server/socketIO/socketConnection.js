@@ -72,7 +72,7 @@ const socketConnect = async (io, socket) => {
   });
   socket.on("alertConfirmed", (targetUserId, leadId, senderId) => {
     //  targetUserId  AA ,leadId ,senderId BB  BB confirm alert and send response
-    
+
     io.emit("confirmAlert", {
       confirmId: targetUserId,
       leadId: leadId,
@@ -94,6 +94,16 @@ const socketConnect = async (io, socket) => {
       userLeads[userId] = null;
       socket.broadcast.emit("updateLeads", leads);
     }
+  });
+
+  let timeChange;
+  socket.on("timeSpentData", (socket) => {
+    // Respond with the current leads data when requested
+    console.log("okay");
+    if (timeChange) {
+      clearInterval(timeChange);
+    }
+    setInterval(() => socket.emit("timeRequest", new Data()), 1000);
   });
 };
 module.exports = socketConnect;
