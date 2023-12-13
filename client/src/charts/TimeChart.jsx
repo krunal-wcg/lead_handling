@@ -25,7 +25,6 @@ function TimeChart() {
 
     fetchData();
   }, []);
-  console.log(data);
 
   return (
     data &&

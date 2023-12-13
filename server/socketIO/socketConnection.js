@@ -2,7 +2,7 @@ const Leads = require("../models/leadsModel");
 
 const userLeads = {}; // Keep track of leads opened by each user
 const leads = {};
-
+const leadTimers = {};
 const socketConnect = async (io, socket) => {
   // Group orders by status within the last week
   const leadsResult = await Leads?.aggregate([
@@ -46,15 +46,42 @@ const socketConnect = async (io, socket) => {
       userLeads[userId] = leadId;
       socket.emit("leadOpened", { leadId, userId });
       socket.broadcast.emit("updateLeads", leads);
+
+      // Store the opening time when the lead is opened
+      leadTimers[leadId] = { start: Date.now(), timerId: null };
+
+      // Start a timer for the lead
+      leadTimers[leadId].timerId = setInterval(() => {
+        // console.log("Bhupendra jogi==>> ",leadTimers);
+        io.emit("leadTimerUpdate", {
+          leadId,
+          elapsedTime: Date.now() - leadTimers[leadId].start,
+        });
+      }, 1000); // Update every 1000 milliseconds (1 second)
     }
   });
 
   socket.on("closeLead", (leadId, userId) => {
+
+    console.log("dsdsd",leadId);
     if (userLeads[userId] === leadId) {
       leads[leadId].user = null;
       userLeads[userId] = null;
       socket.emit("leadClosed", leadId);
       socket.broadcast.emit("updateLeads", leads);
+
+      // Stop the timer when the lead is closed
+      if (leadTimers[leadId] && leadTimers[leadId].timerId) {
+        clearInterval(leadTimers[leadId].timerId);
+        leadTimers[leadId].timerId = null;
+      }
+      console.log("dsdsd",leadId);
+      // Emit the total elapsed time when the lead is closed
+      io.emit("leadTimerClosed", {
+        userId,
+        leadId,
+        elapsedTime: Date.now() - leadTimers[leadId].start,
+      });
     }
   });
 
