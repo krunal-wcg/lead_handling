@@ -67,7 +67,7 @@ const LeadList = () => {
     setCurrentLead(leadId);
   };
 
-  const closeLead = (leadId, closerID ) => {
+  const closeLead = (leadId, closerID) => {
     setOpen(false);
     socket.emit("closeLead", leadId, closerID);
   };
@@ -211,20 +211,17 @@ const LeadList = () => {
       // Optionally, you can display this in real-time on the UI
     });
 
-    socket.on("leadTimerClosed", ({ userId, leadId, elapsedTime }) => {
+    socket.on("leadTimerClosed", async ({ userId, leadId, elapsedTime }) => {
       const time = Math.floor(elapsedTime / 1000);
 
       const Payload = {
         userId: userId,
         totalSpentTime: time,
       };
-      axios
+      await axios
         .put(`http://192.168.1.107:9000/api/leads/chart/${leadId}`, Payload, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })
-        .then((response) => {
-         console.log(response)
-        });
     });
 
     return () => {
@@ -293,13 +290,12 @@ const LeadList = () => {
                   {data?.map((el) => (
                     <tr
                       key={el?._id}
-                      className={`${
-                        leads[el?._id]?.user === userId
-                          ? "bg-green-100"
-                          : leads[el?._id]?.user
+                      className={`${leads[el?._id]?.user === userId
+                        ? "bg-green-100"
+                        : leads[el?._id]?.user
                           ? "bg-yellow-100"
                           : ""
-                      } border-b-2 border-cyan-500 `}
+                        } border-b-2 border-cyan-500 `}
                     >
                       <td className="px-4 py-3">{el?.name}</td>
                       <td className="px-4 py-3">{el?.email}</td>
@@ -317,41 +313,41 @@ const LeadList = () => {
                         )}
                         {leads[el?._id]?.user
                           ? leads[el?._id]?.user !== userId && (
-                              <div className="flex">
-                                {" "}
-                                <Tooltip message={` ${leads[el?._id].user}`}>
+                            <div className="flex">
+                              {" "}
+                              <Tooltip message={` ${leads[el?._id].user}`}>
+                                <button
+                                  data-tooltip-target="tooltip-default"
+                                  type="button"
+                                >
+                                  <FcCompactCamera />
+                                </button>
+                              </Tooltip>
+                              {!Object.keys(leads).find(
+                                (key) => leads[key].user === userId
+                              ) &&
+                                role && (
                                   <button
-                                    data-tooltip-target="tooltip-default"
-                                    type="button"
+                                    onClick={() =>
+                                      sendAlert(
+                                        leads[el?._id]?.user,
+                                        el?._id,
+                                        userId
+                                      )
+                                    }
                                   >
-                                    <FcCompactCamera />
+                                    <FcExternal />
                                   </button>
-                                </Tooltip>
-                                {!Object.keys(leads).find(
-                                  (key) => leads[key].user === userId
-                                ) &&
-                                  role && (
-                                    <button
-                                      onClick={() =>
-                                        sendAlert(
-                                          leads[el?._id]?.user,
-                                          el?._id,
-                                          userId
-                                        )
-                                      }
-                                    >
-                                      <FcExternal />
-                                    </button>
-                                  )}
-                              </div>
-                            )
+                                )}
+                            </div>
+                          )
                           : !Object.keys(leads).find(
-                              (key) => leads[key].user === userId
-                            ) && (
-                              <button onClick={() => openLead(el?._id, userId)}>
-                                <FcEditImage />{" "}
-                              </button>
-                            )}
+                            (key) => leads[key].user === userId
+                          ) && (
+                            <button onClick={() => openLead(el?._id, userId)}>
+                              <FcEditImage />{" "}
+                            </button>
+                          )}
                       </td>
                     </tr>
                   ))}
@@ -362,7 +358,7 @@ const LeadList = () => {
         </section>
 
         {/* <!-- drawer component --> */}
-        <EditForm open={open} setOpen={setOpen} currentLead={currentLead}/>
+        <EditForm open={open} setOpen={setOpen} currentLead={currentLead} />
       </>
     )
   );

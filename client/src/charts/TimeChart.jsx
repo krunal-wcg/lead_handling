@@ -1,10 +1,22 @@
 import React, { useEffect, useState } from "react";
 import StackedColumnsChart from "./StackedColumnsChart";
 import axios from "axios";
+import { socket } from "../healpers/socket";
 
 function TimeChart() {
   const [loading, setLoading] = useState(!1);
   const [data, setData] = useState([]);
+  const [chartData, setChartData] = useState(true);
+
+  useEffect(() => {
+    socket.on("getChart", () => {
+      setChartData(!chartData);
+    });
+
+    return () => {
+      socket.off("getChart");
+    };
+  }, [chartData]);
 
   useEffect(() => {
     setLoading(!0);
@@ -22,9 +34,9 @@ function TimeChart() {
           console.log(err.response.data);
         });
     }
-
     fetchData();
-  }, []);
+
+  }, [chartData]);
 
   return (
     data &&
