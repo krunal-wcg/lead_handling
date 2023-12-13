@@ -9,7 +9,6 @@ const userLeadSchema = new mongoose.Schema({
   },
   totalSpentTime: {
     type: Number,
-    default: 0,
   },
 });
 
