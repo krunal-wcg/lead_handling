@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { GlobalNav } from "../common/global-nav";
 import { sidebarRoutes } from "../lib/demos";
 import Dashboard from "../pages/Dashboard";
@@ -20,9 +20,7 @@ const Router = () => {
         <Route
           path="/"
           element={
-            <ProtectedLogin>
-              <Dashboard />
-            </ProtectedLogin>
+          <Navigate to="/dashboard" replace  />
           }
         />
         <Route
