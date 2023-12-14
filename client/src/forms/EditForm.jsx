@@ -3,7 +3,7 @@ import React from "react";
 import LeadEdit from "../common/LeadEdit";
 import { socket } from "../healpers/socket";
 import { decodedToken } from "../healpers/getDecodedToken";
-const EditForm = ({ open, setOpen, currentLead }) => {
+const EditForm = ({ open, setOpen, currentLead, setCurrentLead }) => {
 
 
 
@@ -30,7 +30,7 @@ const EditForm = ({ open, setOpen, currentLead }) => {
           >
             <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
           </svg>
-          Edit User
+          { currentLead ? "Edit User":"Add user"}
         </h5>
         <button
           type="button"
@@ -39,6 +39,7 @@ const EditForm = ({ open, setOpen, currentLead }) => {
           className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white"
           onClick={() => {
             setOpen(false);
+            setCurrentLead("");
             socket.emit("closeLead", currentLead, decodedToken().user?.id);
           }}
         >
@@ -61,7 +62,7 @@ const EditForm = ({ open, setOpen, currentLead }) => {
         </button>
         <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-md shadow-md">
           <h2 className="text-2xl font-bold mb-4">Edit Person</h2>
-         <LeadEdit currentLead={currentLead} setOpen={setOpen}/>
+         <LeadEdit currentLead={currentLead} setOpen={setOpen} setCurrentLead={setCurrentLead} />
         </div>
       </div>
     </div>

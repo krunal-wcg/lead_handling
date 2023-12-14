@@ -46,7 +46,10 @@ const LeadList = () => {
     setLoading(!0);
     async function fetchData() {
       // You can await here
-      await Api.get(`/leads`)
+      await axios
+        .get(`http://192.168.1.76:9000/api/leads`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        })
         .then((response) => {
           setLoading(!1);
           setData(response?.data?.leads);
@@ -79,7 +82,7 @@ const LeadList = () => {
     async function fetchData() {
       // You can await here
       await axios
-        .get(`http://192.168.1.107:9000/api/leads`, {
+        .get(`http://192.168.1.76:9000/api/leads`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })
         .then((response) => {
@@ -92,9 +95,8 @@ const LeadList = () => {
         });
     }
 
-    leads && token && fetchData();
-  }, []);
-
+    leads && fetchData();
+  }, [currentLead]);
 
   useEffect(() => {
     // Request initial leads data when component mounts
@@ -217,10 +219,13 @@ const LeadList = () => {
         userId: userId,
         totalSpentTime: time,
       };
-      await Api
-        .put(`http://192.168.1.107:9000/api/leads/chart/${leadId}`, Payload, {
+      await axios.put(
+        `http://192.168.1.76:9000/api/leads/chart/${leadId}`,
+        Payload,
+        {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        })
+        }
+      );
     });
 
     return () => {
@@ -254,7 +259,15 @@ const LeadList = () => {
                 List of the Leads
               </p>
             </div>
+
             <div className="lg:w-5/6 w-full mx-auto overflow-auto">
+            {/*  */}
+            <button
+              onClick={() => setOpen(!open)}
+              class="inline-block text-black bg-slate-200  py-2 my-3 px-6 focus:outline-none hover:bg-slate-300 border-b-cyan-500 border-b-2"
+            >
+              Add New Lead
+            </button>
               <table className="table-auto w-full text-left whitespace-no-wrap">
                 <thead>
                   <tr className="border-b-4 border-stone-700">
@@ -289,12 +302,13 @@ const LeadList = () => {
                   {data?.map((el) => (
                     <tr
                       key={el?._id}
-                      className={`${leads[el?._id]?.user === userId
-                        ? "bg-green-100"
-                        : leads[el?._id]?.user
+                      className={`${
+                        leads[el?._id]?.user === userId
+                          ? "bg-green-100"
+                          : leads[el?._id]?.user
                           ? "bg-yellow-100"
                           : ""
-                        } border-b-2 border-cyan-500 `}
+                      } border-b-2 border-cyan-500 `}
                     >
                       <td className="px-4 py-3">{el?.name}</td>
                       <td className="px-4 py-3">{el?.email}</td>
@@ -306,47 +320,47 @@ const LeadList = () => {
 
                       <td>
                         {leads[el?._id]?.user === userId && (
-                          <button onClick={() => closeLead(el?._id, userId,)}>
+                          <button onClick={() => closeLead(el?._id, userId)}>
                             <FcRemoveImage />
                           </button>
                         )}
                         {leads[el?._id]?.user
                           ? leads[el?._id]?.user !== userId && (
-                            <div className="flex">
-                              {" "}
-                              <Tooltip message={` ${leads[el?._id].user}`}>
-                                <button
-                                  data-tooltip-target="tooltip-default"
-                                  type="button"
-                                >
-                                  <FcCompactCamera />
-                                </button>
-                              </Tooltip>
-                              {!Object.keys(leads).find(
-                                (key) => leads[key].user === userId
-                              ) &&
-                                role && (
+                              <div className="flex">
+                                {" "}
+                                <Tooltip message={` ${leads[el?._id].user}`}>
                                   <button
-                                    onClick={() =>
-                                      sendAlert(
-                                        leads[el?._id]?.user,
-                                        el?._id,
-                                        userId
-                                      )
-                                    }
+                                    data-tooltip-target="tooltip-default"
+                                    type="button"
                                   >
-                                    <FcExternal />
+                                    <FcCompactCamera />
                                   </button>
-                                )}
-                            </div>
-                          )
+                                </Tooltip>
+                                {!Object.keys(leads).find(
+                                  (key) => leads[key].user === userId
+                                ) &&
+                                  role && (
+                                    <button
+                                      onClick={() =>
+                                        sendAlert(
+                                          leads[el?._id]?.user,
+                                          el?._id,
+                                          userId
+                                        )
+                                      }
+                                    >
+                                      <FcExternal />
+                                    </button>
+                                  )}
+                              </div>
+                            )
                           : !Object.keys(leads).find(
-                            (key) => leads[key].user === userId
-                          ) && (
-                            <button onClick={() => openLead(el?._id, userId)}>
-                              <FcEditImage />{" "}
-                            </button>
-                          )}
+                              (key) => leads[key].user === userId
+                            ) && (
+                              <button onClick={() => openLead(el?._id, userId)}>
+                                <FcEditImage />{" "}
+                              </button>
+                            )}
                       </td>
                     </tr>
                   ))}
@@ -357,7 +371,7 @@ const LeadList = () => {
         </section>
 
         {/* <!-- drawer component --> */}
-        <EditForm open={open} setOpen={setOpen} currentLead={currentLead} />
+        <EditForm open={open} setOpen={setOpen} currentLead={currentLead} setCurrentLead={setCurrentLead}/>
       </>
     )
   );
