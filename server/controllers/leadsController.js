@@ -25,11 +25,7 @@ const createLead = asyncHandler(async (req, res) => {
   }
 
   const lead = await Leads.create({ name, email, role, city, country, phone });
-  const chart = await Chart.create({
-    leadId: lead?._id,
-    leadName: name,
-    lead: [],
-  });
+  await Chart.create({ leadId: lead?._id, leadName: name, lead: [] });
 
   if (lead) {
     res.status(201).json({
@@ -40,7 +36,6 @@ const createLead = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Lead data is not valid");
   }
-  res.json({ message: "Lead generated successfully ✅" });
 });
 
 /**
@@ -79,6 +74,7 @@ const getLead = asyncHandler(async (req, res) => {
  **/
 const updateLead = asyncHandler(async (req, res) => {
   const lead = await Leads.findById(req.params.id);
+  
   if (!lead) {
     res.status(404);
     throw new Error("Lead not Found");

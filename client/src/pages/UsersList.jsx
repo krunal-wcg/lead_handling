@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 import EditForm from "../forms/EditForm";
+import { Api } from "../utils/api";
 
 const UsersList = () => {
   const [loading, setLoading] = useState(!1);
@@ -15,7 +15,7 @@ const UsersList = () => {
     setLoading(!0);
     async function fetchData() {
       // You can await here
-      await axios.get(`http://192.168.1.107:9000/api/users`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }).then((response) => {
+      await Api.get(`/users`).then((response) => {
         setLoading(!1);
         setData(response?.data?.users);
       }).catch(err => {
