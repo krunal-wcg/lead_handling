@@ -1,15 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import {
-  FcCompactCamera,
-  FcEditImage,
-  FcExternal,
-  FcRemoveImage,
-} from "react-icons/fc";
+import { FcRemoveImage } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-import axios from "axios";
+import {
+  FaCodePullRequest,
+  FaRegCircleXmark,
+  FaUserClock,
+  FaUserPen,
+  FaUserXmark,
+} from "react-icons/fa6";
 import Tooltip from "../common/Tooltip";
 import EditForm from "../forms/EditForm";
 import { decodedToken } from "../healpers/getDecodedToken";
@@ -19,15 +20,18 @@ import { Api } from "../utils/api";
 const LeadList = () => {
   const [userId, setUserId] = useState("111");
   const [leads, setLeads] = useState({});
+  const [username, setUsername] = useState(null);
   const [role, setRole] = useState("");
   const [loading, setLoading] = useState(!1);
   const [data, setData] = useState([]);
   const [currentLead, setCurrentLead] = useState("");
   var token = localStorage.getItem("token");
 
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     token = decodedToken();
     setUserId(token?.user?.id);
+    setUsername(token?.user?.username);
     setRole(token?.user?.role);
   }, []);
 
@@ -42,27 +46,11 @@ const LeadList = () => {
 
   const nav = useNavigate();
 
-  useEffect(() => {
-    setLoading(!0);
-    async function fetchData() {
-      // You can await here
-      await Api.get(`/leads`)
-        .then((response) => {
-          setLoading(!1);
-          setData(response?.data?.leads);
-        })
-        .catch((err) => {
-          console.log(err.response.data);
-          nav("/dashboard");
-        });
-    }
 
-    token && fetchData();
-  }, []);
 
   const openLead = (leadId, senderID) => {
     setOpen(true);
-    socket.emit("openLead", leadId, senderID);
+    socket.emit("openLead", leadId, senderID, username);
     setCurrentLead(leadId);
   };
 
@@ -73,24 +61,23 @@ const LeadList = () => {
   const sendAlert = (targetUserId, sendleadId, senderId) => {
     socket.emit("sendAlertToUser", targetUserId, sendleadId, senderId);
   };
-
+  async function fetchData() {
+    // You can await here
+    await Api.get(`/leads`)
+      .then((response) => {
+        setLoading(!1);
+        setData(response?.data?.leads);
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+        nav("/dashboard");
+      });
+  }
   useEffect(() => {
     setLoading(!0);
-    async function fetchData() {
-      // You can await here
-      await Api.get(`/leads`)
-        .then((response) => {
-          setLoading(!1);
-          setData(response?.data?.leads);
-        })
-        .catch((err) => {
-          console.log(err.response.data);
-          nav("/dashboard");
-        });
-    }
 
     leads && fetchData();
-  }, [currentLead]);
+  }, [open]);
 
   useEffect(() => {
     // Request initial leads data when component mounts
@@ -108,7 +95,7 @@ const LeadList = () => {
     socket.on("leadOpened", ({ leadId, userId }) => {
       setLeads((prevLeads) => ({
         ...prevLeads,
-        [leadId]: { user: userId },
+        [leadId]: { user: userId, username: username },
       }));
     });
 
@@ -213,7 +200,7 @@ const LeadList = () => {
         userId: userId,
         totalSpentTime: time,
       };
-      await Api.put(`/leads/chart/${leadId}`, Payload).then(response => {
+      await Api.put(`/leads/chart/${leadId}`, Payload).then((response) => {
         socket.emit("requestInitialChartData");
       });
     });
@@ -233,7 +220,15 @@ const LeadList = () => {
     };
   }, [userId]);
 
-  const [open, setOpen] = useState(false);
+  const deleteLead = async (id) => {
+    await Api.delete(`/leads/${id}`)
+      .then((response) => {
+        fetchData();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     data &&
@@ -283,7 +278,7 @@ const LeadList = () => {
                     <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br">
                       score
                     </th>
-                    <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br">
+                    <th className="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br px-3">
                       action
                     </th>
                   </tr>
@@ -292,12 +287,13 @@ const LeadList = () => {
                   {data?.map((el) => (
                     <tr
                       key={el?._id}
-                      className={`${leads[el?._id]?.user === userId
-                        ? "bg-green-100"
-                        : leads[el?._id]?.user
+                      className={`${
+                        leads[el?._id]?.user === userId
+                          ? "bg-green-100"
+                          : leads[el?._id]?.user
                           ? "bg-yellow-100"
                           : ""
-                        } border-b-2 border-cyan-500 `}
+                      } border-b-2 border-cyan-500 `}
                     >
                       <td className="px-4 py-3">{el?.name}</td>
                       <td className="px-4 py-3">{el?.email}</td>
@@ -309,47 +305,53 @@ const LeadList = () => {
 
                       <td>
                         {leads[el?._id]?.user === userId && (
-                          <button onClick={() => closeLead(el?._id, userId)}>
-                            <FcRemoveImage />
-                          </button>
+                          <FaRegCircleXmark
+                            className="h-5 w-5 text-cyan-800 cursor-pointer mx-2  "
+                            onClick={() => closeLead(el?._id, userId)}
+                          />
                         )}
                         {leads[el?._id]?.user
                           ? leads[el?._id]?.user !== userId && (
-                            <div className="flex">
-                              {" "}
-                              <Tooltip message={` ${leads[el?._id].user}`}>
-                                <button
-                                  data-tooltip-target="tooltip-default"
-                                  type="button"
+                              <div className="flex">
+                                {" "}
+                                <Tooltip
+                                  message={` ${leads[el?._id].username}`}
                                 >
-                                  <FcCompactCamera />
-                                </button>
-                              </Tooltip>
-                              {!Object.keys(leads).find(
-                                (key) => leads[key].user === userId
-                              ) &&
-                                role && (
-                                  <button
-                                    onClick={() =>
-                                      sendAlert(
-                                        leads[el?._id]?.user,
-                                        el?._id,
-                                        userId
-                                      )
-                                    }
-                                  >
-                                    <FcExternal />
-                                  </button>
-                                )}
-                            </div>
-                          )
+                                  <FaUserClock className="h-5 w-5 text-cyan-800 cursor-pointer mx-2  " />
+                                </Tooltip>
+                                {!Object.keys(leads).find(
+                                  (key) => leads[key].user === userId
+                                ) &&
+                                  role && (
+                                    <FaCodePullRequest
+                                      className="h-5 w-5 text-green-800 cursor-pointer mx-2  "
+                                      onClick={() =>
+                                        sendAlert(
+                                          leads[el?._id]?.user,
+                                          el?._id,
+                                          userId
+                                        )
+                                      }
+                                    />
+                                  )}
+                              </div>
+                            )
                           : !Object.keys(leads).find(
-                            (key) => leads[key].user === userId
-                          ) && (
-                            <button onClick={() => openLead(el?._id, userId)}>
-                              <FcEditImage />{" "}
-                            </button>
-                          )}
+                              (key) => leads[key].user === userId
+                            ) && (
+                              <div className="flex">
+                                <FaUserPen
+                                  className="h-5 w-5 text-gray-800 cursor-pointer mx-2  "
+                                  onClick={() => openLead(el?._id, userId)}
+                                />
+                                {role && (
+                                  <FaUserXmark
+                                    className="h-5 w-5 text-red-500 cursor-pointer mx-2 "
+                                    onClick={() => deleteLead(el._id)}
+                                  />
+                                )}
+                              </div>
+                            )}
                       </td>
                     </tr>
                   ))}
