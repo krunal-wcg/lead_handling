@@ -11,11 +11,10 @@ const EditForm = ({ open, setOpen, currentLead, setCurrentLead }) => {
     <div>
       <div
         id="drawer-right-example"
-        className={`fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto bg-white w-[33rem] dark:bg-gray-800 ${
-          open === false ? "transition-transform translate-x-full" : ""
-        }`}
-        // tabindex="-1"
-        // aria-labelledby="drawer-right-label"
+        className={`fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto bg-white w-[33rem] dark:bg-gray-800 ${open === false ? "transition-transform translate-x-full" : ""
+          }`}
+      // tabindex="-1"
+      // aria-labelledby="drawer-right-label"
       >
         <h5
           id="drawer-right-label"
@@ -30,7 +29,7 @@ const EditForm = ({ open, setOpen, currentLead, setCurrentLead }) => {
           >
             <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
           </svg>
-          { currentLead ? "Edit User":"Add user"}
+          {currentLead ? "Edit User" : "Add user"}
         </h5>
         <button
           type="button"
@@ -62,7 +61,7 @@ const EditForm = ({ open, setOpen, currentLead, setCurrentLead }) => {
         </button>
         <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-md shadow-md">
           <h2 className="text-2xl font-bold mb-4">Edit Person</h2>
-         <LeadEdit currentLead={currentLead} setOpen={setOpen} setCurrentLead={setCurrentLead} />
+          <LeadEdit currentLead={currentLead} setOpen={setOpen} setCurrentLead={setCurrentLead} />
         </div>
       </div>
     </div>

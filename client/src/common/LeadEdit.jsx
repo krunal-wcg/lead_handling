@@ -1,4 +1,3 @@
-import axios from "axios";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
