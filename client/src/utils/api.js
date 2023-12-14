@@ -31,7 +31,10 @@ Api.interceptors.response.use(
   },
   function (error) {
     // Do something with request error
-    if (error.message === "Network Error") {
+    if (
+      error.response.data.title === "Server Error" ||
+      error.response.data.title === "Unauthorized"
+    ) {
       localStorage.clear();
       window.location.reload();
     }

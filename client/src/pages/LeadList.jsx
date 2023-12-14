@@ -81,10 +81,7 @@ const LeadList = () => {
     setLoading(!0);
     async function fetchData() {
       // You can await here
-      await axios
-        .get(`http://192.168.1.76:9000/api/leads`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        })
+      await Api.get(`/leads`)
         .then((response) => {
           setLoading(!1);
           setData(response?.data?.leads);
@@ -219,13 +216,7 @@ const LeadList = () => {
         userId: userId,
         totalSpentTime: time,
       };
-      await axios.put(
-        `http://192.168.1.76:9000/api/leads/chart/${leadId}`,
-        Payload,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
+      await Api.put(`/leads/chart/${leadId}`, Payload);
     });
 
     return () => {
@@ -261,13 +252,13 @@ const LeadList = () => {
             </div>
 
             <div className="lg:w-5/6 w-full mx-auto overflow-auto">
-            {/*  */}
-            <button
-              onClick={() => setOpen(!open)}
-              class="inline-block text-black bg-slate-200  py-2 my-3 px-6 focus:outline-none hover:bg-slate-300 border-b-cyan-500 border-b-2"
-            >
-              Add New Lead
-            </button>
+              {/*  */}
+              <button
+                onClick={() => setOpen(!open)}
+                class="inline-block text-black bg-slate-200  py-2 my-3 px-6 focus:outline-none hover:bg-slate-300 border-b-cyan-500 border-b-2"
+              >
+                Add New Lead
+              </button>
               <table className="table-auto w-full text-left whitespace-no-wrap">
                 <thead>
                   <tr className="border-b-4 border-stone-700">
@@ -371,7 +362,12 @@ const LeadList = () => {
         </section>
 
         {/* <!-- drawer component --> */}
-        <EditForm open={open} setOpen={setOpen} currentLead={currentLead} setCurrentLead={setCurrentLead}/>
+        <EditForm
+          open={open}
+          setOpen={setOpen}
+          currentLead={currentLead}
+          setCurrentLead={setCurrentLead}
+        />
       </>
     )
   );
