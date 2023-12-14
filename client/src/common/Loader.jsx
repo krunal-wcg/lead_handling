@@ -13,18 +13,18 @@ const Loader = () => {
           <circle
             fill="none"
             stroke="teal"
-            stroke-width="4"
-            stroke-miterlimit="10"
+            strokeWidth="4"
+            strokeMiterlimit="10"
             cx="50"
             cy="50"
             r="48"
           />
           <line
             fill="none"
-            stroke-linecap="round"
+            strokeLinecap="round"
             stroke="blue"
-            stroke-width="4"
-            stroke-miterlimit="10"
+            strokeWidth="4"
+            strokeMiterlimit="10"
             x1="50"
             y1="50"
             x2="85"
@@ -41,10 +41,10 @@ const Loader = () => {
           </line>
           <line
             fill="none"
-            stroke-linecap="round"
+            strokeLinecap="round"
             stroke="orange"
-            stroke-width="4"
-            stroke-miterlimit="10"
+            strokeWidth="4"
+            strokeMiterlimit="10"
             x1="50"
             y1="50"
             x2="49.5"
