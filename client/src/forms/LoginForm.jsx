@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
-import { Link, useNavigate } from "react-router-dom";
 import { Form, Formik } from "formik";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import axios from "axios";
-import { FaEyeSlash, FaEye } from "react-icons/fa6";
+import { Api } from "../utils/api";
 
 // Creating schema
 const schema = Yup.object({
@@ -36,8 +36,7 @@ export default function LoginForm() {
         onSubmit={async (values) => {
           try {
             setLoading(!0);
-            await axios.post(`http://192.168.1.107:9000/api/users/login`, { password: values?.password, ...validateEmail(values.email) }).then((response) => {
-              // toast.success(response?.data?.message);
+            await Api.post(`/users/login`, { password: values?.password, ...validateEmail(values.email) }).then((response) => {
               navigate("/");
               localStorage.setItem("token", response?.data?.accessToken);
             });

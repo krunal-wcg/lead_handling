@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2";
 import {
   FcCompactCamera,
   FcEditImage,
@@ -8,12 +7,14 @@ import {
   FcRemoveImage,
 } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
+import axios from "axios";
 import Tooltip from "../common/Tooltip";
 import EditForm from "../forms/EditForm";
-import axios from "axios";
 import { decodedToken } from "../healpers/getDecodedToken";
 import { socket } from "../healpers/socket";
+import { Api } from "../utils/api";
 
 const LeadList = () => {
   const [userId, setUserId] = useState("111");
@@ -22,9 +23,10 @@ const LeadList = () => {
   const [loading, setLoading] = useState(!1);
   const [data, setData] = useState([]);
   const [currentLead, setCurrentLead] = useState("");
+  var token = localStorage.getItem("token");
 
   useEffect(() => {
-    var token = decodedToken();
+    token = decodedToken();
     setUserId(token?.user?.id);
     setRole(token?.user?.role);
   }, []);
@@ -44,10 +46,7 @@ const LeadList = () => {
     setLoading(!0);
     async function fetchData() {
       // You can await here
-      await axios
-        .get(`http://192.168.1.107:9000/api/leads`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        })
+      await Api.get(`/leads`)
         .then((response) => {
           setLoading(!1);
           setData(response?.data?.leads);
@@ -58,7 +57,7 @@ const LeadList = () => {
         });
     }
 
-    fetchData();
+    token && fetchData();
   }, []);
 
   const openLead = (leadId, senderID) => {
@@ -93,7 +92,7 @@ const LeadList = () => {
         });
     }
 
-    leads && fetchData();
+    leads && token && fetchData();
   }, []);
 
 
@@ -218,7 +217,7 @@ const LeadList = () => {
         userId: userId,
         totalSpentTime: time,
       };
-      await axios
+      await Api
         .put(`http://192.168.1.107:9000/api/leads/chart/${leadId}`, Payload, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })

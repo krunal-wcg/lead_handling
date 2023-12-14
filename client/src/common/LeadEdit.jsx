@@ -1,29 +1,29 @@
-import React, { useEffect, useState } from 'react'
-import { Formik } from "formik";
-import * as Yup from "yup";
 import axios from "axios";
-import { socket } from '../healpers/socket';
+import { Formik } from "formik";
+import React, { useEffect, useState } from 'react';
+import * as Yup from "yup";
 import { decodedToken } from '../healpers/getDecodedToken';
-const LeadEdit = ({currentLead ,setOpen}) => {
-    const [currentData, setCurrentData] = useState({});
+import { socket } from '../healpers/socket';
+import { Api } from '../utils/api';
+const LeadEdit = ({ currentLead, setOpen }) => {
+  const [currentData, setCurrentData] = useState({});
 
-    useEffect(() => {
-      async function fetchData() {
-        // You can await here
-        await axios
-          .get(`http://192.168.1.107:9000/api/leads/${currentLead}`, {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-          })
-          .then((response) => {
-            setCurrentData(response?.data?.data);
-          });
-      }
-  
+  useEffect(() => {
+    if (currentLead) {
       fetchData();
-    }, [currentLead]);
+    }
+    async function fetchData() {
+      // You can await here
+      await Api.get(`/leads/${currentLead}`)
+        .then((response) => {
+          setCurrentData(response?.data?.data);
+        });
+    }
+
+  }, [currentLead]);
   return (
     <Formik
-    enableReinitialize
+      enableReinitialize
       initialValues={{
         name: currentData?.name || "",
         email: currentData?.email || "",
@@ -46,17 +46,17 @@ const LeadEdit = ({currentLead ,setOpen}) => {
         phone: Yup.number().nullable(true).required("Required"),
         score: Yup.number().nullable(true).required("Required"),
       })}
-      onSubmit={ async(values) => {
-     
+      onSubmit={async (values) => {
+
         await axios
-        .put(`http://192.168.1.107:9000/api/leads/${currentLead}`,values ,{
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-         
-        })
-        .then((response) => {
-          setOpen(false)
-          socket.emit("closeLead", currentLead, decodedToken().user?.id);
-        });
+          .put(`http://192.168.1.107:9000/api/leads/${currentLead}`, values, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+
+          })
+          .then((response) => {
+            setOpen(false)
+            socket.emit("closeLead", currentLead, decodedToken().user?.id);
+          });
       }}
     >
       {(formik) => (

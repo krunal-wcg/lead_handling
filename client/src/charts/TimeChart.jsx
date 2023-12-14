@@ -1,12 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import StackedColumnsChart from "./StackedColumnsChart";
-import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 import { socket } from "../healpers/socket";
+import { Api } from "../utils/api";
+import StackedColumnsChart from "./StackedColumnsChart";
 
 function TimeChart() {
   const [loading, setLoading] = useState(!1);
   const [data, setData] = useState([]);
   const [chartData, setChartData] = useState(true);
+  const nav = useNavigate()
 
   useEffect(() => {
     socket.on("getChart", () => {
@@ -22,16 +25,14 @@ function TimeChart() {
     setLoading(!0);
     async function fetchData() {
       // You can await here
-      await axios
-        .get(`http://192.168.1.107:9000/api/leads/chart/all`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        })
+      await Api.get(`/leads/chart/all`)
         .then((response) => {
           setLoading(!1);
           setData(response?.data?.data);
         })
         .catch((err) => {
           console.log(err.response.data);
+          nav("/dashboard")
         });
     }
     fetchData();

@@ -3,10 +3,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import axios from "axios";
 import { Form, Formik } from "formik";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import * as Yup from "yup";
+import { Api } from "../utils/api";
 
 // Creating schema
 const schema = Yup.object({
@@ -33,7 +33,7 @@ export default function SignUpForm() {
         onSubmit={async (values) => {
           try {
             setLoading(!0);
-            const response = await axios.post(`http://192.168.1.107:9000/api/users/register`, values)
+            const response = await Api.post(`/users/register`, values)
             navigate("/signin");
             console.log("Sign up Success", response.data);
           } catch (error) {
