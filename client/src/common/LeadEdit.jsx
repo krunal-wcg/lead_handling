@@ -1,11 +1,11 @@
 import axios from "axios";
 import { Formik } from "formik";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
-import { decodedToken } from '../healpers/getDecodedToken';
-import { socket } from '../healpers/socket';
-import { Api } from '../utils/api';
-const LeadEdit = ({ currentLead, setOpen,setCurrentLead }) => {
+import { decodedToken } from "../healpers/getDecodedToken";
+import { socket } from "../healpers/socket";
+import { Api } from "../utils/api";
+const LeadEdit = ({ currentLead, setOpen, setCurrentLead }) => {
   const [currentData, setCurrentData] = useState({});
 
   useEffect(() => {
@@ -14,12 +14,10 @@ const LeadEdit = ({ currentLead, setOpen,setCurrentLead }) => {
     }
     async function fetchData() {
       // You can await here
-      await Api.get(`/leads/${currentLead}`)
-        .then((response) => {
-          setCurrentData(response?.data?.data);
-        });
+      await Api.get(`/leads/${currentLead}`).then((response) => {
+        setCurrentData(response?.data?.data);
+      });
     }
-
   }, [currentLead]);
   return (
     <Formik
@@ -37,45 +35,31 @@ const LeadEdit = ({ currentLead, setOpen,setCurrentLead }) => {
         name: Yup.string()
           .max(15, "Must be 15 characters or less")
           .required("Required"),
-        email: Yup.string()
-          .email("Invalid email address")
-          .required("Required"),
+        email: Yup.string().email("Invalid email address").required("Required"),
         role: Yup.string().required("Required"),
         city: Yup.string().required("Required"),
         country: Yup.string().required("Required"),
         phone: Yup.number().nullable(true).required("Required"),
         score: Yup.number().nullable(true).required("Required"),
       })}
-      onSubmit={ async(values) => {
-     
+      onSubmit={async (values) => {
         if (currentLead) {
-          await axios
-        .put(`http://192.168.1.76:9000/api/leads/${currentLead}`,values ,{
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        })
-        .then((response) => {
-          setOpen(false);
-          setCurrentLead("");
-          socket.emit("closeLead", currentLead, decodedToken().user?.id);
-        });
-        }else{
-          await axios
-        .post(`http://192.168.1.76:9000/api/leads/create`,values ,{
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        })
-        .then((response) => {
-          setOpen(false)
-        });
+          await Api.put(`/leads/${currentLead}`, values).then((response) => {
+            setOpen(false);
+            setCurrentLead("");
+            socket.emit("closeLead", currentLead, decodedToken().user?.id);
+          });
+        } else {
+          await Api.post(`/leads/create`, values).then((response) => {
+            setOpen(false);
+          });
         }
-        
       }}
     >
       {(formik) => (
         <form onSubmit={formik.handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1">
-              Name:
-            </label>
+            <label className="block text-sm font-semibold mb-1">Name:</label>
             <input
               type="text"
               {...formik.getFieldProps("name")}
@@ -86,9 +70,7 @@ const LeadEdit = ({ currentLead, setOpen,setCurrentLead }) => {
             ) : null}
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1">
-              email:
-            </label>
+            <label className="block text-sm font-semibold mb-1">email:</label>
             <input
               type="text"
               {...formik.getFieldProps("email")}
@@ -100,9 +82,7 @@ const LeadEdit = ({ currentLead, setOpen,setCurrentLead }) => {
             ) : null}
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1">
-              role:
-            </label>
+            <label className="block text-sm font-semibold mb-1">role:</label>
             <input
               type="text"
               {...formik.getFieldProps("role")}
@@ -114,9 +94,7 @@ const LeadEdit = ({ currentLead, setOpen,setCurrentLead }) => {
             ) : null}
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1">
-              city:
-            </label>
+            <label className="block text-sm font-semibold mb-1">city:</label>
             <input
               type="text"
               {...formik.getFieldProps("city")}
@@ -128,9 +106,7 @@ const LeadEdit = ({ currentLead, setOpen,setCurrentLead }) => {
             ) : null}
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1">
-              country:
-            </label>
+            <label className="block text-sm font-semibold mb-1">country:</label>
             <input
               type="text"
               {...formik.getFieldProps("country")}
@@ -142,9 +118,7 @@ const LeadEdit = ({ currentLead, setOpen,setCurrentLead }) => {
             ) : null}
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1">
-              phone:
-            </label>
+            <label className="block text-sm font-semibold mb-1">phone:</label>
             <input
               type="number"
               {...formik.getFieldProps("phone")}
@@ -156,9 +130,7 @@ const LeadEdit = ({ currentLead, setOpen,setCurrentLead }) => {
             ) : null}
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1">
-              score:
-            </label>
+            <label className="block text-sm font-semibold mb-1">score:</label>
             <input
               type="number"
               {...formik.getFieldProps("score")}
@@ -179,7 +151,7 @@ const LeadEdit = ({ currentLead, setOpen,setCurrentLead }) => {
         </form>
       )}
     </Formik>
-  )
-}
+  );
+};
 
-export default LeadEdit
+export default LeadEdit;
