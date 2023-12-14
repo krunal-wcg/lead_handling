@@ -74,7 +74,7 @@ const getLead = asyncHandler(async (req, res) => {
  **/
 const updateLead = asyncHandler(async (req, res) => {
   const lead = await Leads.findById(req.params.id);
-  
+
   if (!lead) {
     res.status(404);
     throw new Error("Lead not Found");
@@ -85,7 +85,9 @@ const updateLead = asyncHandler(async (req, res) => {
     req.body,
     { new: true } // Returning the updated lead after the update
   );
-  res.status(200).json(updatedLead); // Sending the access token as a JSON response
+  res
+    .status(200)
+    .json({ updatedLead, message: "Lead updated successfully 🎉" }); // Sending the access token as a JSON response
 });
 
 /**
@@ -115,7 +117,8 @@ const deleteLead = asyncHandler(async (req, res) => {
 
   // Deleting the lead and sending the deleted lead as a response
   await Leads.deleteOne({ _id: req.params.id });
-  res.status(200).json(lead); // Sending the deleted lead as a JSON response
+  await Chart.deleteOne({ leadId: req.params.id });
+  res.status(200).json({ lead: lead, message: "Lead deleted successfully 😎" }); // Sending the deleted lead as a JSON response
 });
 
 /**
