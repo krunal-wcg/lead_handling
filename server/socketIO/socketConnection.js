@@ -19,7 +19,7 @@ const socketConnect = async (io, socket) => {
     leadsResult
       ?.map((e) => e?._id?.toString())
       ?.forEach((item) => {
-        leads[item] = { user: null };
+        leads[item] = { user: null ,username:null };
       });
 
   console.log(`A user connected ${socket?.id}`);
@@ -41,7 +41,7 @@ const socketConnect = async (io, socket) => {
     }, 1000);
   });
 
-  socket.on("openLead", (leadId, userId) => {
+  socket.on("openLead", (leadId, userId,username) => {
     if (!leads[leadId]) {
       socket.emit("invalidLead", `Lead ${leadId} does not exist.`);
     } else if (leads[leadId].user) {
@@ -56,6 +56,7 @@ const socketConnect = async (io, socket) => {
       );
     } else {
       leads[leadId].user = userId;
+      leads[leadId].username=username;
       userLeads[userId] = leadId;
       socket.emit("leadOpened", { leadId, userId });
       socket.broadcast.emit("updateLeads", leads);
@@ -76,6 +77,8 @@ const socketConnect = async (io, socket) => {
   socket.on("closeLead", async (leadId, userId) => {
     if (userLeads[userId] === leadId) {
       leads[leadId].user = null;
+      leads[leadId].username = null;
+
       userLeads[userId] = null;
       await socket.emit("leadClosed", leadId);
       await socket.broadcast.emit("updateLeads", leads);
@@ -129,6 +132,7 @@ const socketConnect = async (io, socket) => {
     if (userId) {
       const leadId = userLeads[userId];
       leads[leadId].user = null;
+      leads[leadId].username = null;
       userLeads[userId] = null;
       socket.broadcast.emit("updateLeads", leads);
     }
