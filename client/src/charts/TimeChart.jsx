@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { socket } from "../healpers/socket";
 import StackedColumnsChart from "./StackedColumnsChart";
+import Loader from "../common/Loader";
 
 function TimeChart() {
   const [data, setData] = useState([]);
@@ -19,13 +20,13 @@ function TimeChart() {
   }, []);
 
   return (
-    !!data.length && (
-      <section className=" max-lg:m-2 text-gray-600 body-font">
+    !!data.length ?(
+      <section className=" max-lg:m-2 text-gray-600 h-screen body-font">
         <div className="lg:w-3/5 px-2 py-24 mx-auto">
           <StackedColumnsChart data={data} />
         </div>
       </section>
-    )
+    ):<Loader/>
   );
 }
 
