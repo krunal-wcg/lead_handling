@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import { decodedToken } from '../healpers/getDecodedToken';
 import { socket } from '../healpers/socket';
 import { Api } from '../utils/api';
-const LeadEdit = ({ currentLead, setOpen }) => {
+const LeadEdit = ({ currentLead, setOpen,setCurrentLead }) => {
   const [currentData, setCurrentData] = useState({});
 
   useEffect(() => {
@@ -46,17 +46,28 @@ const LeadEdit = ({ currentLead, setOpen }) => {
         phone: Yup.number().nullable(true).required("Required"),
         score: Yup.number().nullable(true).required("Required"),
       })}
-      onSubmit={async (values) => {
-
-        await axios
-          .put(`http://192.168.1.107:9000/api/leads/${currentLead}`, values, {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-
-          })
-          .then((response) => {
-            setOpen(false)
-            socket.emit("closeLead", currentLead, decodedToken().user?.id);
-          });
+      onSubmit={ async(values) => {
+     
+        if (currentLead) {
+          await axios
+        .put(`http://192.168.1.76:9000/api/leads/${currentLead}`,values ,{
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        })
+        .then((response) => {
+          setOpen(false);
+          setCurrentLead("");
+          socket.emit("closeLead", currentLead, decodedToken().user?.id);
+        });
+        }else{
+          await axios
+        .post(`http://192.168.1.76:9000/api/leads/create`,values ,{
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        })
+        .then((response) => {
+          setOpen(false)
+        });
+        }
+        
       }}
     >
       {(formik) => (
@@ -67,9 +78,6 @@ const LeadEdit = ({ currentLead, setOpen }) => {
             </label>
             <input
               type="text"
-              // value={formik.values?.name}
-              // id="name"
-              // name="name"
               {...formik.getFieldProps("name")}
               className="w-full border rounded-md px-3 py-2"
             />
