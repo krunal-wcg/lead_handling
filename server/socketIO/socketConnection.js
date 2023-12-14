@@ -1,4 +1,5 @@
 const Leads = require("../models/leadsModel");
+const Chart = require("../models/chartModel");
 
 const userLeads = {}; // Keep track of leads opened by each user
 const leads = {};
@@ -28,6 +29,18 @@ const socketConnect = async (io, socket) => {
     await socket.emit("initialData", leads);
   });
 
+  socket.on("timeSpentData", async () => {
+    let timeChange;
+    // Respond with the current leads data when requested
+    if (timeChange) {
+      clearInterval(timeChange);
+    }
+    setInterval(async () => {
+      var initialData = await Chart.find();
+      socket.emit("timeRequest", initialData);
+    }, 1000);
+  });
+
   socket.on("openLead", (leadId, userId) => {
     if (!leads[leadId]) {
       socket.emit("invalidLead", `Lead ${leadId} does not exist.`);
@@ -52,7 +65,6 @@ const socketConnect = async (io, socket) => {
 
       // Start a timer for the lead
       leadTimers[leadId].timerId = setInterval(() => {
-        // console.log("Bhupendra jogi==>> ",leadTimers);
         io.emit("leadTimerUpdate", {
           leadId,
           elapsedTime: Date.now() - leadTimers[leadId].start,
@@ -66,7 +78,7 @@ const socketConnect = async (io, socket) => {
       leads[leadId].user = null;
       userLeads[userId] = null;
       await socket.emit("leadClosed", leadId);
-      await  socket.broadcast.emit("updateLeads", leads);
+      await socket.broadcast.emit("updateLeads", leads);
 
       // Stop the timer when the lead is closed
       if (leadTimers[leadId] && leadTimers[leadId].timerId) {
@@ -80,7 +92,7 @@ const socketConnect = async (io, socket) => {
         elapsedTime: Date.now() - leadTimers[leadId].start,
       });
 
-      await io.emit("getChart");
+      // await io.emit("getChart");
     }
   });
 

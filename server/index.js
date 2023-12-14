@@ -1,5 +1,6 @@
 const express = require("express");
 const http = require("http");
+const cors = require("cors");
 const connectDb = require("./config/dbConnection");
 const allowCrossDomain = require("./middleware/nocorsHandler");
 const errorHandler = require("./middleware/errorHandler");
@@ -24,6 +25,7 @@ const asyncFN = async () => {
 
 asyncFN();
 
+app.use(cors());
 app.use(express.json());
 app.use(allowCrossDomain);
 app.get("/", function (req, res) {

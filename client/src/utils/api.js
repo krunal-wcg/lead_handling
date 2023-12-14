@@ -4,6 +4,9 @@ export const Api = axios.create({
   baseURL: "http://192.168.1.107:9000/api",
   headers: {
     "Content-Type": "application/json",
+    "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT, DELETE",
+    "Access-Control-Allow-Headers":
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization",
     Authorization:
       localStorage.getItem("token") &&
       `Bearer ${localStorage.getItem("token")}`,

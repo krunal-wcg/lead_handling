@@ -46,10 +46,7 @@ const LeadList = () => {
     setLoading(!0);
     async function fetchData() {
       // You can await here
-      await axios
-        .get(`http://192.168.1.76:9000/api/leads`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        })
+      await Api.get(`/leads`)
         .then((response) => {
           setLoading(!1);
           setData(response?.data?.leads);
@@ -216,7 +213,9 @@ const LeadList = () => {
         userId: userId,
         totalSpentTime: time,
       };
-      await Api.put(`/leads/chart/${leadId}`, Payload);
+      await Api.put(`/leads/chart/${leadId}`, Payload).then(response => {
+        socket.emit("requestInitialChartData");
+      });
     });
 
     return () => {
@@ -255,7 +254,7 @@ const LeadList = () => {
               {/*  */}
               <button
                 onClick={() => setOpen(!open)}
-                class="inline-block text-black bg-slate-200  py-2 my-3 px-6 focus:outline-none hover:bg-slate-300 border-b-cyan-500 border-b-2"
+                className="inline-block text-black bg-slate-200  py-2 my-3 px-6 focus:outline-none hover:bg-slate-300 border-b-cyan-500 border-b-2"
               >
                 Add New Lead
               </button>
@@ -293,13 +292,12 @@ const LeadList = () => {
                   {data?.map((el) => (
                     <tr
                       key={el?._id}
-                      className={`${
-                        leads[el?._id]?.user === userId
-                          ? "bg-green-100"
-                          : leads[el?._id]?.user
+                      className={`${leads[el?._id]?.user === userId
+                        ? "bg-green-100"
+                        : leads[el?._id]?.user
                           ? "bg-yellow-100"
                           : ""
-                      } border-b-2 border-cyan-500 `}
+                        } border-b-2 border-cyan-500 `}
                     >
                       <td className="px-4 py-3">{el?.name}</td>
                       <td className="px-4 py-3">{el?.email}</td>
@@ -317,41 +315,41 @@ const LeadList = () => {
                         )}
                         {leads[el?._id]?.user
                           ? leads[el?._id]?.user !== userId && (
-                              <div className="flex">
-                                {" "}
-                                <Tooltip message={` ${leads[el?._id].user}`}>
+                            <div className="flex">
+                              {" "}
+                              <Tooltip message={` ${leads[el?._id].user}`}>
+                                <button
+                                  data-tooltip-target="tooltip-default"
+                                  type="button"
+                                >
+                                  <FcCompactCamera />
+                                </button>
+                              </Tooltip>
+                              {!Object.keys(leads).find(
+                                (key) => leads[key].user === userId
+                              ) &&
+                                role && (
                                   <button
-                                    data-tooltip-target="tooltip-default"
-                                    type="button"
+                                    onClick={() =>
+                                      sendAlert(
+                                        leads[el?._id]?.user,
+                                        el?._id,
+                                        userId
+                                      )
+                                    }
                                   >
-                                    <FcCompactCamera />
+                                    <FcExternal />
                                   </button>
-                                </Tooltip>
-                                {!Object.keys(leads).find(
-                                  (key) => leads[key].user === userId
-                                ) &&
-                                  role && (
-                                    <button
-                                      onClick={() =>
-                                        sendAlert(
-                                          leads[el?._id]?.user,
-                                          el?._id,
-                                          userId
-                                        )
-                                      }
-                                    >
-                                      <FcExternal />
-                                    </button>
-                                  )}
-                              </div>
-                            )
+                                )}
+                            </div>
+                          )
                           : !Object.keys(leads).find(
-                              (key) => leads[key].user === userId
-                            ) && (
-                              <button onClick={() => openLead(el?._id, userId)}>
-                                <FcEditImage />{" "}
-                              </button>
-                            )}
+                            (key) => leads[key].user === userId
+                          ) && (
+                            <button onClick={() => openLead(el?._id, userId)}>
+                              <FcEditImage />{" "}
+                            </button>
+                          )}
                       </td>
                     </tr>
                   ))}
