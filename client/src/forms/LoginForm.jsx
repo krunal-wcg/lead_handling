@@ -5,6 +5,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { Api } from "../utils/api";
+import { getSuccessToast } from "../common/Toaster/toaster";
 
 // Creating schema
 const schema = Yup.object({
@@ -38,6 +39,7 @@ export default function LoginForm() {
             setLoading(!0);
             await Api.post(`/users/login`, { password: values?.password, ...validateEmail(values.email) }).then((response) => {
               navigate("/");
+              getSuccessToast(response.data.message);
               localStorage.setItem("token", response?.data?.accessToken);
             });
           } catch (error) {

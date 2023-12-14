@@ -16,6 +16,7 @@ import EditForm from "../forms/EditForm";
 import { decodedToken } from "../healpers/getDecodedToken";
 import { socket } from "../healpers/socket";
 import { Api } from "../utils/api";
+import { getSuccessToast } from "../common/Toaster/toaster";
 
 const LeadList = () => {
   const [userId, setUserId] = useState("111");
@@ -224,6 +225,7 @@ const LeadList = () => {
     await Api.delete(`/leads/${id}`)
       .then((response) => {
         fetchData();
+        getSuccessToast(response?.data?.message)
       })
       .catch((err) => {
         console.log(err);
@@ -287,13 +289,12 @@ const LeadList = () => {
                   {data?.map((el) => (
                     <tr
                       key={el?._id}
-                      className={`${
-                        leads[el?._id]?.user === userId
-                          ? "bg-green-100"
-                          : leads[el?._id]?.user
+                      className={`${leads[el?._id]?.user === userId
+                        ? "bg-green-100"
+                        : leads[el?._id]?.user
                           ? "bg-yellow-100"
                           : ""
-                      } border-b-2 border-cyan-500 `}
+                        } border-b-2 border-cyan-500 `}
                     >
                       <td className="px-4 py-3">{el?.name}</td>
                       <td className="px-4 py-3">{el?.email}</td>
@@ -312,46 +313,46 @@ const LeadList = () => {
                         )}
                         {leads[el?._id]?.user
                           ? leads[el?._id]?.user !== userId && (
-                              <div className="flex">
-                                {" "}
-                                <Tooltip
-                                  message={` ${leads[el?._id].username}`}
-                                >
-                                  <FaUserClock className="h-5 w-5 text-cyan-800 cursor-pointer mx-2  " />
-                                </Tooltip>
-                                {!Object.keys(leads).find(
-                                  (key) => leads[key].user === userId
-                                ) &&
-                                  role && (
-                                    <FaCodePullRequest
-                                      className="h-5 w-5 text-green-800 cursor-pointer mx-2  "
-                                      onClick={() =>
-                                        sendAlert(
-                                          leads[el?._id]?.user,
-                                          el?._id,
-                                          userId
-                                        )
-                                      }
-                                    />
-                                  )}
-                              </div>
-                            )
-                          : !Object.keys(leads).find(
-                              (key) => leads[key].user === userId
-                            ) && (
-                              <div className="flex">
-                                <FaUserPen
-                                  className="h-5 w-5 text-gray-800 cursor-pointer mx-2  "
-                                  onClick={() => openLead(el?._id, userId)}
-                                />
-                                {role && (
-                                  <FaUserXmark
-                                    className="h-5 w-5 text-red-500 cursor-pointer mx-2 "
-                                    onClick={() => deleteLead(el._id)}
+                            <div className="flex">
+                              {" "}
+                              <Tooltip
+                                message={` ${leads[el?._id].username}`}
+                              >
+                                <FaUserClock className="h-5 w-5 text-cyan-800 cursor-pointer mx-2  " />
+                              </Tooltip>
+                              {!Object.keys(leads).find(
+                                (key) => leads[key].user === userId
+                              ) &&
+                                role && (
+                                  <FaCodePullRequest
+                                    className="h-5 w-5 text-green-800 cursor-pointer mx-2  "
+                                    onClick={() =>
+                                      sendAlert(
+                                        leads[el?._id]?.user,
+                                        el?._id,
+                                        userId
+                                      )
+                                    }
                                   />
                                 )}
-                              </div>
-                            )}
+                            </div>
+                          )
+                          : !Object.keys(leads).find(
+                            (key) => leads[key].user === userId
+                          ) && (
+                            <div className="flex">
+                              <FaUserPen
+                                className="h-5 w-5 text-gray-800 cursor-pointer mx-2  "
+                                onClick={() => openLead(el?._id, userId)}
+                              />
+                              {role && (
+                                <FaUserXmark
+                                  className="h-5 w-5 text-red-500 cursor-pointer mx-2 "
+                                  onClick={() => deleteLead(el._id)}
+                                />
+                              )}
+                            </div>
+                          )}
                       </td>
                     </tr>
                   ))}

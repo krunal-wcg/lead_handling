@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import { decodedToken } from "../healpers/getDecodedToken";
 import { socket } from "../healpers/socket";
 import { Api } from "../utils/api";
+import { getSuccessToast } from "./Toaster/toaster";
 const LeadEdit = ({ currentLead, setOpen, setCurrentLead }) => {
   const [currentData, setCurrentData] = useState({});
 
@@ -46,11 +47,13 @@ const LeadEdit = ({ currentLead, setOpen, setCurrentLead }) => {
           await Api.put(`/leads/${currentLead}`, values).then((response) => {
             setOpen(false);
             setCurrentLead("");
+            getSuccessToast(response?.data?.message)
             socket.emit("closeLead", currentLead, decodedToken().user?.id);
           });
         } else {
           await Api.post(`/leads/create`, values).then((response) => {
             setOpen(false);
+            getSuccessToast(response?.data?.message)
           });
         }
       }}
