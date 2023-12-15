@@ -45,9 +45,9 @@ export function GlobalNav() {
         </button>
         <div
           className={clsx(
-            "overflow-y-auto lg:static lg:block lg:bg-transparent bg-[gray]/80",
+            "overflow-y-auto lg:static lg:block lg:bg-transparent bg-[teal]",
             {
-              "fixed inset-x-0 bottom-0 top-14 mt-5 rounded m-4": isOpen,
+              "fixed inset-x-0 bottom-0 top-14 rounded": isOpen,
               hidden: !isOpen,
             }
           )}
@@ -73,7 +73,7 @@ export function GlobalNav() {
                 </div>
               );
             })}
-            <Byline className="absolute hidden lg:block" />
+            <Byline className="lg:absolute lg:block lg:bg-transparent absolute" />
           </nav>
         </div>
       </div >

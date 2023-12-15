@@ -27,7 +27,7 @@ export default function Byline({ className }) {
       <div
         className={`${className} text-black  inset-x-0 bottom-3 mx-3 rounded-lg p-px hover:bg-blue-900`}
       >
-        <div className="flex justify-between space-y-2 rounded-lg bg-blue-500/50 lg:px-5 lg:py-3">
+        <div className="flex justify-between space-y-2 rounded-lg bg-blue-500/50 px-5 py-3">
           <div className="flex justify-between space-y-2">
             <Avatar
               name={name}

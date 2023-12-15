@@ -21,7 +21,7 @@ function TimeChart() {
 
   return (
     !!data.length ?(
-      <section className=" max-lg:m-2 text-gray-600 h-screen body-font">
+      <section className="max-lg:m-2 text-gray-600 body-font">
         <div className="lg:w-3/5 px-2 py-24 mx-auto">
           <StackedColumnsChart data={data} />
         </div>
